@@ -53,8 +53,9 @@ export default function RootLayout({
   // No server-side user fetch here on purpose: reading cookies() in the root
   // layout would opt every route (including static marketing pages) out of
   // static rendering (Capítulo 23 priority). SessionProvider hydrates the
-  // real auth state client-side instead — (portal) routes, which already
-  // need a per-request session check, do their own server-side fetch.
+  // real auth state client-side instead — routes that need a per-request
+  // session check (e.g. /login's already-authenticated guard) do their own
+  // server-side fetch.
   return (
     <html
       lang="pt-BR"

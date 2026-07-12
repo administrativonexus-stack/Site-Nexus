@@ -66,7 +66,10 @@ test("an unknown portfolio slug renders the marketing 404", async ({ page }) => 
   await expect(page.getByText("Página não encontrada.")).toBeVisible();
 });
 
-test("visiting a private route while logged out redirects to /login", async ({ page }) => {
-  await page.goto("/dashboard");
-  await expect(page).toHaveURL(/\/login\?next=%2Fdashboard/);
+test("the retired mock Portal routes are gone (404), not silently broken", async ({ page }) => {
+  // The Portal (Dashboard/Perfil/Configurações) was retired in favor of
+  // real SSO into the external CRM — PRIVATE_ROUTES is now empty, so there's
+  // no local private route left for middleware to protect/redirect.
+  const response = await page.goto("/dashboard");
+  expect(response?.status()).toBe(404);
 });

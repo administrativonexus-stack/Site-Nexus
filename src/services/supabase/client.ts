@@ -1,9 +1,11 @@
 import { createBrowserClient } from "@supabase/ssr";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
+import { getCookieDomain, getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
 
 /** Shared singleton — use in Client Components to read the current session. */
 export function createClient() {
-  return createBrowserClient(getSupabaseUrl(), getSupabaseAnonKey());
+  return createBrowserClient(getSupabaseUrl(), getSupabaseAnonKey(), {
+    cookieOptions: { domain: getCookieDomain() },
+  });
 }
 
 const SEVEN_DAYS = 60 * 60 * 24 * 7;
@@ -17,6 +19,9 @@ const THIRTY_DAYS = 60 * 60 * 24 * 30;
 export function createSignInClient(rememberMe: boolean) {
   return createBrowserClient(getSupabaseUrl(), getSupabaseAnonKey(), {
     isSingleton: false,
-    cookieOptions: { maxAge: rememberMe ? THIRTY_DAYS : SEVEN_DAYS },
+    cookieOptions: {
+      maxAge: rememberMe ? THIRTY_DAYS : SEVEN_DAYS,
+      domain: getCookieDomain(),
+    },
   });
 }

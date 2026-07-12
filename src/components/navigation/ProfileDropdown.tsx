@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, LogOut, Settings, User as UserIcon, Users } from "lucide-react";
+import { LogOut, Users } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -46,21 +45,9 @@ export function ProfileDropdown({ user }: { user: User }) {
           {email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/profile" />}>
-          <UserIcon />
-          Meu Perfil
-        </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/dashboard" />}>
-          <LayoutDashboard />
-          Dashboard
-        </DropdownMenuItem>
-        <DropdownMenuItem render={<a href={CRM_URL} target="_blank" rel="noopener noreferrer" />}>
+        <DropdownMenuItem render={<a href={CRM_URL} />}>
           <Users />
-          CRM
-        </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/settings" />}>
-          <Settings />
-          Configurações
+          Ir para o CRM
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

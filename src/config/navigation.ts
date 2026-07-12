@@ -28,24 +28,22 @@ export const SITEMAP_ROUTES = ["/", "/solutions", "/portfolio", "/about", "/cont
 
 /**
  * Protected routes (Supabase session required, enforced by middleware).
- * `/admin` is a dedicated area (resolved decision). `/client` stays out —
- * Capítulo 21 marks it "(Roadmap)". `/crm` isn't here — the CRM is an
- * already-built, separately-hosted app (see CRM_URL below), not a route in
- * this codebase, so there's nothing here for our middleware to protect.
+ * Intentionally empty — the mock Portal (`/dashboard`, `/settings`,
+ * `/profile`, `/admin`, `/developer`) was retired once real SSO with the
+ * CRM shipped (see CRM_URL below); there's nothing left in this codebase to
+ * protect. Kept as an array, not deleted, so `proxy.ts`'s route-protection
+ * mechanism is ready to go the moment a real local private route exists again.
  */
-export const PRIVATE_ROUTES = [
-  "/dashboard",
-  "/settings",
-  "/profile",
-  "/developer",
-  "/admin",
-] as const;
+export const PRIVATE_ROUTES = [] as const;
 
 /**
- * The CRM is a separate, already-built app with its own login (not part of
- * this codebase, no SSO) — the Sidebar just links out to it.
+ * The CRM is a separate, already-built app on the same parent domain
+ * (`teamnexus.com.br`) and the same Supabase project as this site — logging
+ * in here authenticates there too via a shared, domain-scoped session
+ * cookie (see NEXT_PUBLIC_COOKIE_DOMAIN). No token handoff, no SSO receiver
+ * route on the CRM side needed.
  */
-export const CRM_URL = "https://nexus-prospect-zeta.vercel.app/login";
+export const CRM_URL = "https://crm.teamnexus.com.br";
 
 /** Icon keys map to lucide-react components in the Navbar (kept as strings so this stays plain data). */
 export const SOLUTIONS_MEGA_MENU = [
@@ -86,27 +84,6 @@ export const SOLUTIONS_MEGA_MENU = [
     icon: "plug",
   },
 ] as const;
-
-/**
- * Portal Sidebar (Capítulo 21). "CRM" links out to CRM_URL (external =
- * true → Sidebar renders it as a plain <a target="_blank">, not a Next
- * <Link>, and skips active-route highlighting for it). Agenda / IA SDR /
- * Clientes from the PRD's sidebar diagram live inside that external app,
- * not as separate links here.
- */
-export const PORTAL_NAV_LINKS = [
-  { title: "Dashboard", href: "/dashboard", icon: "layout-dashboard", external: false },
-  { title: "CRM", href: CRM_URL, icon: "users", external: true },
-  { title: "Configurações", href: "/settings", icon: "settings", external: false },
-] as const;
-
-/** Only shown to users with `user_metadata.role === "admin"` (Capítulo 21 profile: Administrador). */
-export const PORTAL_ADMIN_LINK = {
-  title: "Admin",
-  href: "/admin",
-  icon: "shield",
-  external: false,
-} as const;
 
 export const NAV_LINKS = {
   company: [

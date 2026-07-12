@@ -1,11 +1,11 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
+import { getCookieDomain, getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
 
 /**
  * Server Component / layout client. `setAll` is wrapped in try/catch because
  * Server Components can't write cookies — session refresh there is a no-op
- * and relies on the middleware (src/middleware.ts) to refresh on navigation.
+ * and relies on the middleware (src/proxy.ts) to refresh on navigation.
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -21,5 +21,6 @@ export async function createClient() {
         }
       },
     },
+    cookieOptions: { domain: getCookieDomain() },
   });
 }

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
+import { getCookieDomain, getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
 
 /**
  * Refreshes the Supabase session cookie on every request and returns the
@@ -22,6 +22,7 @@ export async function updateSession(request: NextRequest) {
         );
       },
     },
+    cookieOptions: { domain: getCookieDomain() },
   });
 
   const {
