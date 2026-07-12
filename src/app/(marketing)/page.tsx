@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
 import { Hero } from "@/features/hero";
@@ -25,6 +26,19 @@ const InteractiveDemo = dynamic(
     import("@/features/interactive-demo").then((mod) => mod.InteractiveDemo),
   { loading: () => <InteractiveDemoSkeleton /> },
 );
+
+// Home doesn't call buildMetadata() — title/description/OG defaults already
+// come from the root layout and shouldn't get "Nexus | Nexus" from the title
+// template. It still needs its own canonical though (Capítulo 22 requires
+// every page to have one). Deliberately NOT setting `openGraph.url` here:
+// doing so replaces (rather than merges with) the root opengraph-image.tsx
+// file-convention image instead of just adding a URL — confirmed by a build
+// A/B test where og:image disappeared entirely the moment `openGraph` was
+// set at all on this page. og:url is a smaller loss than a missing preview
+// image on social shares.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const projects = await getProjects();
