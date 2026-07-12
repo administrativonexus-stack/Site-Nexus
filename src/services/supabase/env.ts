@@ -16,11 +16,21 @@ export function getSupabaseAnonKey() {
 }
 
 /**
- * Only set in Production (`.teamnexus.com.br`) — a shared, dot-prefixed
- * cookie domain is what lets the CRM subdomain (crm.teamnexus.com.br) see
- * the same session cookie for real SSO. Left unset on localhost and Preview
- * deployments, where the page's own host can't set a cookie for a different
- * domain — doing so there would just silently break login.
+ * Service-role key — bypasses RLS. Only for server-only code that genuinely
+ * needs to (webhook handlers, admin invite flow) via `createServiceClient()`
+ * in `server.ts`. Never expose to a Client Component, never log.
+ */
+export function getServiceRoleKey() {
+  return requireEnv("SUPABASE_SERVICE_ROLE_KEY", process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
+/**
+ * Vestigial: built for a cross-subdomain SSO design (site + CRM as separate
+ * hosts sharing a session cookie) that was superseded once the CRM was
+ * merged into this app at /portal — everything is one origin now, so this
+ * has no reason to ever be set again. Left in place rather than removed
+ * since deleting it would touch every Supabase client constructor for no
+ * behavioral gain; harmless as long as it stays unset.
  */
 export function getCookieDomain(): string | undefined {
   return process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined;

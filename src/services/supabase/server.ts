@@ -1,6 +1,11 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { getCookieDomain, getSupabaseAnonKey, getSupabaseUrl } from "@/services/supabase/env";
+import {
+  getCookieDomain,
+  getServiceRoleKey,
+  getSupabaseAnonKey,
+  getSupabaseUrl,
+} from "@/services/supabase/env";
 
 /**
  * Server Component / layout client. `setAll` is wrapped in try/catch because
@@ -18,6 +23,28 @@ export async function createClient() {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
           // Called from a Server Component — safe to ignore, middleware handles refresh.
+        }
+      },
+    },
+    cookieOptions: { domain: getCookieDomain() },
+  });
+}
+
+/**
+ * Service-role client — bypasses RLS (Portal webhook handlers, admin invite
+ * flow). Route Handlers only, never a Server Component or Client Component.
+ */
+export async function createServiceClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(getSupabaseUrl(), getServiceRoleKey(), {
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Safe to ignore — service-role calls don't need session cookie writes.
         }
       },
     },
