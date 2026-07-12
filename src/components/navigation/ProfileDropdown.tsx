@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
 import { LogOut, Users } from "lucide-react";
 
@@ -13,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CRM_URL } from "@/config/navigation";
 import { useLogout } from "@/features/authentication/use-logout";
 
 function initials(email: string) {
@@ -45,9 +45,9 @@ export function ProfileDropdown({ user }: { user: User }) {
           {email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<a href={CRM_URL} />}>
+        <DropdownMenuItem render={<Link href="/portal/dashboard" />}>
           <Users />
-          Ir para o CRM
+          Ir para o Portal
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

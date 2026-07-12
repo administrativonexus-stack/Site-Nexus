@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSignInClient } from "@/services/supabase/client";
 import { getAuthErrorMessage } from "@/features/authentication/constants";
-import { CRM_URL } from "@/config/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -32,11 +33,7 @@ export function LoginForm() {
       return;
     }
 
-    // Full page navigation, not the Next router — crm.teamnexus.com.br is a
-    // different origin. The shared, domain-scoped session cookie (see
-    // NEXT_PUBLIC_COOKIE_DOMAIN) is what actually carries the login over;
-    // this redirect alone doesn't do any token handoff.
-    window.location.href = CRM_URL;
+    router.push("/portal/dashboard");
   }
 
   return (

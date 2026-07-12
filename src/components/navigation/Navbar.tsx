@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { useSession, useLogout } from "@/features/authentication";
-import { CRM_URL, NAV_LINKS, SOLUTIONS_MEGA_MENU } from "@/config/navigation";
+import { NAV_LINKS, SOLUTIONS_MEGA_MENU } from "@/config/navigation";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
@@ -179,10 +179,10 @@ export function Navbar() {
               {user ? (
                 <>
                   <SheetClose
-                    render={<a href={CRM_URL} />}
+                    render={<Link href="/portal/dashboard" />}
                     className={cn("mt-6 py-2 font-medium", mobileNavLinkClass)}
                   >
-                    Ir para o CRM
+                    Ir para o Portal
                   </SheetClose>
                   <button
                     onClick={logout}

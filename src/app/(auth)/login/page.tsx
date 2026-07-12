@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/features/authentication/LoginForm";
 import { buildMetadata } from "@/lib/metadata";
-import { CRM_URL } from "@/config/navigation";
 import { createClient as createServerSupabaseClient } from "@/services/supabase/server";
 
 export const metadata = buildMetadata({
@@ -18,10 +17,9 @@ export default async function LoginPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Already-authenticated users go straight to the CRM instead of seeing
-  // the form again — mirrors the guard the old (portal)/layout.tsx used to
-  // have before the mock Portal was retired in favor of the CRM.
-  if (user) redirect(CRM_URL);
+  // Already-authenticated users go straight to the Portal instead of seeing
+  // the form again.
+  if (user) redirect("/portal/dashboard");
 
   return (
     <div className="flex flex-col gap-8">
