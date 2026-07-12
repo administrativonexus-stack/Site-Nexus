@@ -6,6 +6,10 @@ export const CONTACT_CONTENT = {
 } as const;
 
 export const CONTACT_CHANNELS = [
-  { label: "WhatsApp", value: "+55 (00) 00000-0000", href: "https://wa.me/5500000000000" },
-  { label: "E-mail", value: "contato@nexus.com.br", href: "mailto:contato@nexus.com.br" },
+  { label: "WhatsApp", value: "+55 (37) 99126-5286", href: "https://wa.me/5537991265286" },
+  {
+    label: "E-mail",
+    value: "administrativonexus@gmail.com",
+    href: "mailto:administrativonexus@gmail.com",
+  },
 ] as const;

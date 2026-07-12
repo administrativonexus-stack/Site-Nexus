@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { NotFoundContent } from "@/components/layout/NotFoundContent";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 
 /**
  * Global fallback for routes that don't match any segment at all (e.g. a
@@ -16,6 +17,7 @@ export default function GlobalNotFound() {
         <NotFoundContent />
       </main>
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }

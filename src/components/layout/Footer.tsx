@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { FOOTER_LINKS } from "@/config/navigation";
 import { SOCIAL_LINKS } from "@/config/social";
+import { CONTACT_CHANNELS } from "@/features/contact";
 
 const SOCIALS = [
   { name: "LinkedIn", href: SOCIAL_LINKS.linkedin, icon: LinkedinIcon },
@@ -74,12 +75,17 @@ export function Footer() {
         </FooterColumn>
 
         <FooterColumn title="Contato">
-          <a href="#" className={linkClass}>
-            WhatsApp
-          </a>
-          <a href="#" className={linkClass}>
-            E-mail
-          </a>
+          {CONTACT_CHANNELS.map((channel) => (
+            <a
+              key={channel.label}
+              href={channel.href}
+              target={channel.label === "WhatsApp" ? "_blank" : undefined}
+              rel={channel.label === "WhatsApp" ? "noopener noreferrer" : undefined}
+              className={linkClass}
+            >
+              {channel.label}
+            </a>
+          ))}
           <Button render={<Link href="/contact" />} size="sm" className="mt-2 w-fit">
             Agendar uma reunião →
           </Button>
