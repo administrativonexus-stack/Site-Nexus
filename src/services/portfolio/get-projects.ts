@@ -2,11 +2,13 @@ import { PROJECTS, type Project } from "@/features/portfolio/constants";
 
 /**
  * Fase 9 (CMS, Capítulo 25): the portfolio is meant to be served by the CRM's
- * API, not hardcoded here. That API doesn't exist yet — the CRM is a
- * separate, already-built app (see config/navigation.ts's CRM_URL) whose
- * team is building it later. Until NEXT_PUBLIC_CRM_API_URL is set, every
- * function here transparently falls back to the local PROJECTS placeholder
- * data, so the site keeps working exactly as before.
+ * API, not hardcoded here. That API still doesn't exist — the CRM was merged
+ * into this app at /portal (see "Portal retired, real SSO with the CRM" /
+ * the later merge notes in CLAUDE.md), but wiring the public Portfolio pages
+ * to read from the Portal's own database is a separate, not-yet-requested
+ * change. Until NEXT_PUBLIC_CRM_API_URL is set, every function here
+ * transparently falls back to the local PROJECTS placeholder data, so the
+ * site keeps working exactly as before.
  *
  * Expected contract once the API exists (matches the `Project` type):
  *   GET {NEXT_PUBLIC_CRM_API_URL}/projects       → Project[]

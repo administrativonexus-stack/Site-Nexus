@@ -28,7 +28,12 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
-      `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}`,
+      // wss: variant is for the Portal's Supabase Realtime subscriptions
+      // (use-realtime-campaigns/use-realtime-messages) — the merged CRM's
+      // only client-side third-party connections; every other integration
+      // (OpenAI, Google Calendar, Evolution/WhatsApp Cloud, Apify) runs
+      // exclusively in Route Handlers, never subject to browser CSP.
+      `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""} ${(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace("https://", "wss://")}`,
       "frame-ancestors 'none'",
     ].join("; "),
   },

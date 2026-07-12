@@ -28,22 +28,13 @@ export const SITEMAP_ROUTES = ["/", "/solutions", "/portfolio", "/about", "/cont
 
 /**
  * Protected routes (Supabase session required, enforced by middleware).
- * Intentionally empty — the mock Portal (`/dashboard`, `/settings`,
- * `/profile`, `/admin`, `/developer`) was retired once real SSO with the
- * CRM shipped (see CRM_URL below); there's nothing left in this codebase to
- * protect. Kept as an array, not deleted, so `proxy.ts`'s route-protection
- * mechanism is ready to go the moment a real local private route exists again.
+ * `/portal` is the merged CRM (Nexus Prospect System) — brought into this
+ * app as a real path prefix rather than a separate deployment, so a single
+ * Supabase session covers both the marketing site's auth and the CRM.
+ * `isPrivateRoute()` in `proxy.ts` does prefix matching, so this alone
+ * protects every route under `/portal/*`.
  */
-export const PRIVATE_ROUTES = [] as const;
-
-/**
- * The CRM is a separate, already-built app on the same parent domain
- * (`teamnexus.com.br`) and the same Supabase project as this site — logging
- * in here authenticates there too via a shared, domain-scoped session
- * cookie (see NEXT_PUBLIC_COOKIE_DOMAIN). No token handoff, no SSO receiver
- * route on the CRM side needed.
- */
-export const CRM_URL = "https://crm.teamnexus.com.br";
+export const PRIVATE_ROUTES = ["/portal"] as const;
 
 /** Icon keys map to lucide-react components in the Navbar (kept as strings so this stays plain data). */
 export const SOLUTIONS_MEGA_MENU = [
