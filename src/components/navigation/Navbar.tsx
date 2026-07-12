@@ -6,6 +6,7 @@ import {
   Bot,
   Code2,
   LayoutDashboard,
+  LogIn,
   Menu,
   Plug,
   Users,
@@ -122,6 +123,17 @@ export function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
+        <Button
+          render={<Link href="/login" />}
+          variant="ghost"
+          size="icon"
+          aria-label="Acesso Dev"
+          title="Acesso Dev"
+          className="hidden text-muted-foreground/60 hover:text-muted-foreground md:inline-flex"
+        >
+          <LogIn />
+        </Button>
+
         <Sheet>
           <SheetTrigger
             render={
@@ -158,6 +170,16 @@ export function Navbar() {
                 className={cn("mt-6 py-2 font-medium", mobileNavLinkClass)}
               >
                 Projetos
+              </SheetClose>
+              <SheetClose
+                render={<Link href="/login" />}
+                className={cn(
+                  "text-muted-foreground/60 mt-6 flex items-center gap-2 py-2 text-sm",
+                  mobileNavLinkClass,
+                )}
+              >
+                <LogIn className="size-4" />
+                Acesso Dev
               </SheetClose>
             </nav>
           </SheetContent>
