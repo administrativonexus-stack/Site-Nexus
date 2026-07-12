@@ -75,18 +75,36 @@ test.describe("mobile (375px)", () => {
 test.describe("minimum supported mobile width (320px, Capítulo 27)", () => {
   test.use({ viewport: { width: 320, height: 720 } });
 
-  test("homepage and contact form remain usable with no overflow", async ({ page }) => {
-    await page.goto("/");
-    let hasOverflow = await page.evaluate(
+  async function expectNoOverflow(page: import("@playwright/test").Page) {
+    const hasOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
     expect(hasOverflow).toBe(false);
+  }
+
+  test("homepage and contact form remain usable with no overflow", async ({ page }) => {
+    await page.goto("/");
+    await expectNoOverflow(page);
 
     await page.goto("/contact");
     await expect(page.getByLabel("Nome")).toBeVisible();
-    hasOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-    );
-    expect(hasOverflow).toBe(false);
+    await expectNoOverflow(page);
+  });
+
+  test("solutions, about, and portfolio pages have no overflow", async ({ page }) => {
+    await page.goto("/solutions");
+    await expectNoOverflow(page);
+
+    await page.goto("/about");
+    await expectNoOverflow(page);
+
+    await page.goto("/portfolio");
+    await expectNoOverflow(page);
+  });
+
+  test("login page has no overflow and the form stays usable", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByLabel("E-mail")).toBeVisible();
+    await expectNoOverflow(page);
   });
 });

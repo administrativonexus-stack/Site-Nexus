@@ -15,7 +15,7 @@ export function LeadInfoPanel({ lead }: Props) {
   const statusLabel = LEAD_STATUS_LABELS[lead.status]
 
   return (
-    <div className="w-64 flex-shrink-0 border-l border-white/5 flex flex-col bg-[#111B21] overflow-y-auto">
+    <div className="hidden lg:flex w-64 flex-shrink-0 border-l border-white/5 flex-col bg-[#111B21] overflow-y-auto">
       {/* Header */}
       <div className="px-4 py-3.5 border-b border-white/5 bg-[#202C33]">
         <p className="text-[11px] font-semibold text-[#8696A0] uppercase tracking-wider">Informações</p>

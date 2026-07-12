@@ -205,13 +205,13 @@ export function SDRClient({ initialSettings, initialLogs, availableNiches }: SDR
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm shadow-violet-500/25">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm shadow-violet-500/25 flex-shrink-0">
             <Bot className="h-5 w-5 text-white" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl font-semibold tracking-tight">SDR de IA</h1>
               <Badge
                 className={cn(
@@ -229,7 +229,7 @@ export function SDRClient({ initialSettings, initialLogs, availableNiches }: SDR
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="gap-2">
+        <Button onClick={handleSave} disabled={saving} className="gap-2 w-fit flex-shrink-0">
           <Save className="h-4 w-4" />
           {saving ? "Salvando..." : `Salvar "${PROFILE_LABELS[activeProfile]}"`}
         </Button>

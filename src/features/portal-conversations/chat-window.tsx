@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Send, Bot, Phone } from "lucide-react"
+import { ArrowLeft, Send, Bot, Phone } from "lucide-react"
 import { useRealtimeMessages } from "@/hooks/use-realtime-messages"
 import { MessageBubble } from "./message-bubble"
 import type { Lead } from "@/types/lead"
@@ -98,7 +99,14 @@ export function ChatWindow({ lead, initialMessages }: Props) {
     <div className="flex flex-col flex-1 overflow-hidden bg-[#0B141A]">
       {/* Header — WhatsApp Business style */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#202C33] border-b border-white/5 flex-shrink-0">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <Link
+            href="/portal/conversations"
+            aria-label="Voltar para a lista de conversas"
+            className="md:hidden flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-[#8696A0] hover:text-[#E9EDEF] hover:bg-white/5 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
           {/* Contact avatar with profile photo */}
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-[#00A884] flex items-center justify-center text-white font-semibold text-base">
             {profilePhotoUrl ? (
@@ -115,8 +123,10 @@ export function ChatWindow({ lead, initialMessages }: Props) {
               initial
             )}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-[#E9EDEF] leading-tight">{lead.company_name}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-[#E9EDEF] leading-tight truncate">
+              {lead.company_name}
+            </p>
             {cleanPhone && (
               <p className="text-xs text-[#8696A0] flex items-center gap-1 mt-0.5">
                 <Phone className="h-2.5 w-2.5" />
@@ -130,7 +140,7 @@ export function ChatWindow({ lead, initialMessages }: Props) {
           size="sm"
           variant={aiMode ? "default" : "outline"}
           className={cn(
-            "gap-1.5 text-xs",
+            "gap-1.5 text-xs flex-shrink-0",
             aiMode
               ? "bg-[#00A884] hover:bg-[#00A884]/90 text-white border-0"
               : "border-white/10 text-[#8696A0] hover:text-[#E9EDEF] hover:bg-white/5"
@@ -138,7 +148,7 @@ export function ChatWindow({ lead, initialMessages }: Props) {
           onClick={() => setAiMode((v) => !v)}
         >
           <Bot className="h-3.5 w-3.5" />
-          {aiMode ? "SDR IA ativo" : "Ativar SDR IA"}
+          <span className="hidden sm:inline">{aiMode ? "SDR IA ativo" : "Ativar SDR IA"}</span>
         </Button>
       </div>
 

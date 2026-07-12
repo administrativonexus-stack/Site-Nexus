@@ -79,7 +79,9 @@ export default function RootLayout({
         <MotionConfig reducedMotion="user">
           <SessionProvider initialUser={null}>
             <TooltipProvider>{children}</TooltipProvider>
-            <Toaster />
+            {/* top-center avoids colliding with the public site's fixed
+                bottom-right WhatsAppButton (sonner's own default is bottom-right). */}
+            <Toaster position="top-center" />
           </SessionProvider>
         </MotionConfig>
         {/* Fase 14 "Monitoramento ativo" — both no-op outside a Vercel deployment,

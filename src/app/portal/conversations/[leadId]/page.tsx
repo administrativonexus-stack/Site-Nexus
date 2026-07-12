@@ -29,7 +29,7 @@ export default async function ConversationPage({ params }: Props) {
   await markMessagesRead(leadId).catch(() => {})
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] -mx-6 -mt-6 overflow-hidden">
+    <div className="flex h-[calc(100vh-4rem)] -mx-4 -mt-4 md:-mx-6 md:-mt-6 overflow-hidden">
       <ConversationListPanel leads={list} selectedLeadId={leadId} />
       <ChatWindow lead={lead} initialMessages={messages} />
       <LeadInfoPanel lead={lead} />

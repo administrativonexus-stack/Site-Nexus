@@ -108,7 +108,12 @@ export function ConversationListPanel({ leads, selectedLeadId }: Props) {
 
   return (
     <>
-      <div className="w-72 flex-shrink-0 border-r border-white/5 flex flex-col bg-[#111B21]">
+      <div
+        className={cn(
+          "w-full md:w-72 flex-shrink-0 border-r border-white/5 flex-col bg-[#111B21]",
+          selectedLeadId ? "hidden md:flex" : "flex",
+        )}
+      >
         {/* Header */}
         <div className="px-4 py-3.5 border-b border-white/5 bg-[#202C33] flex items-center justify-between">
           <div>

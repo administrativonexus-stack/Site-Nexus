@@ -16,11 +16,11 @@ export default async function ConversationsPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] -mx-6 -mt-6 overflow-hidden">
+    <div className="flex h-[calc(100vh-4rem)] -mx-4 -mt-4 md:-mx-6 md:-mt-6 overflow-hidden">
       <ConversationListPanel leads={list} selectedLeadId={null} />
 
-      {/* Empty state */}
-      <div className="flex flex-1 items-center justify-center text-center bg-[#0B141A]">
+      {/* Empty state — hidden on mobile, where the list already fills the screen */}
+      <div className="hidden md:flex flex-1 items-center justify-center text-center bg-[#0B141A]">
         <div className="space-y-3">
           <div className="mx-auto w-16 h-16 rounded-full bg-[#202C33] flex items-center justify-center">
             <MessageSquare className="h-7 w-7 text-[#8696A0]" />
