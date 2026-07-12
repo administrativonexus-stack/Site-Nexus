@@ -15,7 +15,6 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/use-scrolled";
-import { useSession, useLogout } from "@/features/authentication";
 import { NAV_LINKS, SOLUTIONS_MEGA_MENU } from "@/config/navigation";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/layout/Logo";
@@ -29,8 +28,6 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ProfileDropdown } from "@/components/navigation/ProfileDropdown";
 
 const SOLUTIONS_ICONS: Record<string, LucideIcon> = {
   code: Code2,
@@ -49,8 +46,6 @@ const mobileNavLinkClass =
 
 export function Navbar() {
   const scrolled = useScrolled();
-  const { user, loading } = useSession();
-  const logout = useLogout();
 
   return (
     <header
@@ -127,18 +122,6 @@ export function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {loading ? (
-          <Skeleton className="hidden size-8 rounded-full md:block" />
-        ) : user ? (
-          <div className="hidden md:block">
-            <ProfileDropdown user={user} />
-          </div>
-        ) : (
-          <Button render={<Link href="/login" />} className="hidden md:inline-flex" size="sm">
-            Entrar
-          </Button>
-        )}
-
         <Sheet>
           <SheetTrigger
             render={
@@ -176,29 +159,6 @@ export function Navbar() {
               >
                 Projetos
               </SheetClose>
-              {user ? (
-                <>
-                  <SheetClose
-                    render={<Link href="/portal/dashboard" />}
-                    className={cn("mt-6 py-2 font-medium", mobileNavLinkClass)}
-                  >
-                    Ir para o Portal
-                  </SheetClose>
-                  <button
-                    onClick={logout}
-                    className={cn(
-                      "text-muted-foreground py-2 text-left font-medium",
-                      mobileNavLinkClass,
-                    )}
-                  >
-                    Sair
-                  </button>
-                </>
-              ) : (
-                <Button render={<Link href="/login" />} className="mt-6">
-                  Entrar
-                </Button>
-              )}
             </nav>
           </SheetContent>
         </Sheet>
