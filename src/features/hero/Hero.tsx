@@ -2,11 +2,9 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import { Zap } from "lucide-react";
 
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import SplitText from "@/components/animations/SplitText";
 import { fadeUp } from "@/config/animations";
 import { HERO_CONTENT } from "@/features/hero/constants";
@@ -31,13 +29,6 @@ export function Hero() {
           variants={container}
           className="flex flex-col items-start gap-6"
         >
-          <motion.div variants={fadeUp}>
-            <Badge variant="outline" className="gap-1.5">
-              <Zap className="text-primary size-3.5" />
-              {HERO_CONTENT.badge}
-            </Badge>
-          </motion.div>
-
           <motion.div variants={fadeUp}>
             <SplitText
               text={HERO_CONTENT.headline}

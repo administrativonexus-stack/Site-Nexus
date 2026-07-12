@@ -1,5 +1,4 @@
 export const HERO_CONTENT = {
-  badge: "Engenharia de Software + IA",
   headline: "Construímos software que impulsiona empresas.",
   subheadline:
     "Desenvolvemos sistemas, automações e inteligência artificial para transformar operações em crescimento.",
