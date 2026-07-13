@@ -49,6 +49,8 @@ const pct = (curr: number, prev: number) => {
   return Math.round(((curr - prev) / prev) * 100)
 }
 
+const fmtSigned = (v: number) => `${v >= 0 ? "+" : "-"}${Math.round(Math.abs(v)).toLocaleString("pt-BR")}`
+
 const EXPENSE_CATEGORIES = [
   "Google Ads","Meta Ads","TikTok Ads","OpenAI","Claude","Gemini","Cursor","Lovable",
   "Cloudflare","Hospedagem","Domínio","Servidor","Internet","Energia","Telefone",
@@ -665,10 +667,26 @@ export function FinanceiroClient() {
                 </p>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={yearReport?.year_chart ?? []} margin={{ top: 8, right: 10, left: 0, bottom: 0 }} barSize={12}>
+            <ResponsiveContainer width="100%" height={236}>
+              <BarChart data={yearReport?.year_chart ?? []} margin={{ top: 8, right: 10, left: 0, bottom: 4 }} barSize={12}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} vertical={false} />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} interval={0} height={40}
+                  tick={(props: { x: string | number; y: string | number; payload: { value: string }; index: number }) => {
+                    const { x, y, payload, index } = props
+                    const point = yearReport?.year_chart?.[index]
+                    const hasData = point && (point.income > 0 || point.expense > 0)
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        <text x={0} y={0} dy={12} textAnchor="middle" fontSize={11} fill="#64748b">{payload.value}</text>
+                        {hasData && (
+                          <text x={0} y={0} dy={26} textAnchor="middle" fontSize={10} fontWeight={600}
+                            fill={point.profit >= 0 ? "#10b981" : "#ef4444"}>
+                            {fmtSigned(point.profit)}
+                          </text>
+                        )}
+                      </g>
+                    )
+                  }} />
                 <YAxis hide />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }} />
                 <Bar dataKey="income" name="income" fill="#10b981" radius={[3, 3, 0, 0]} />
