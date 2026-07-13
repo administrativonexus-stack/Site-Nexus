@@ -205,7 +205,12 @@ function TxModal({ open, onClose, onSaved, editTx, defaultType }: {
     e.preventDefault()
     setSaving(true)
     try {
-      const body = { ...form, amount: parseFloat(form.amount) }
+      const body = {
+        ...form,
+        amount: parseFloat(form.amount),
+        due_date: form.due_date || null,
+        paid_date: form.paid_date || null,
+      }
       const res = editTx
         ? await fetch(`/api/financeiro/transactions/${editTx.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
         : await fetch("/api/financeiro/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
