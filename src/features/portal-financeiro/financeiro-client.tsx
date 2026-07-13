@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, LabelList, Cell,
+  BarChart, Bar,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,13 +13,17 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import {
   TrendingUp, TrendingDown, DollarSign, Wallet,
-  Plus, Pencil, Trash2, CheckCircle2, Clock, XCircle,
-  Loader2, RefreshCw, ArrowUpRight, ArrowDownRight, X,
+  Plus, Pencil, Trash2, CheckCircle2,
+  Loader2, RefreshCw, ArrowUpRight, ArrowDownRight, X, ChevronDown, ChevronLeft, ChevronRight,
 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { fmt, STATUS_CONFIG, type Transaction } from "./types"
+import { MonthDetailSheet } from "./month-detail-sheet"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+interface YearChartPoint { month: string; label: string; income: number; expense: number; profit: number }
 
 interface Metrics {
   receita_mes: number
@@ -31,30 +35,15 @@ interface Metrics {
   prev_profit: number
   contas_pagar: number
   contas_receber: number
-  chart: { month: string; label: string; income: number; expense: number; profit: number }[]
-}
-
-interface Transaction {
-  id: string
-  type: "income" | "expense"
-  amount: number
-  description: string
-  category: string
-  client_name?: string
-  payment_method?: string
-  status: "paid" | "pending" | "overdue"
-  due_date?: string
-  paid_date?: string
-  is_recurring: boolean
-  recurrence?: string
-  notes?: string
-  created_at: string
+  chart: YearChartPoint[]
+  year: number
+  year_income: number
+  year_expense: number
+  year_profit: number
+  year_chart: YearChartPoint[]
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const fmt = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(v)
 
 const pct = (curr: number, prev: number) => {
   if (prev === 0) return curr > 0 ? 100 : 0
@@ -69,6 +58,9 @@ const EXPENSE_CATEGORIES = [
   "Viagens","Combustível","Alimentação","Outros",
 ]
 
+const MONTH_SHORT = Array.from({ length: 12 }, (_, i) =>
+  new Date(2024, i, 1).toLocaleDateString("pt-BR", { month: "short" }))
+
 const PAYMENT_METHODS = [
   { value: "pix", label: "PIX" },
   { value: "card", label: "Cartão" },
@@ -76,12 +68,6 @@ const PAYMENT_METHODS = [
   { value: "transfer", label: "Transferência" },
   { value: "boleto", label: "Boleto" },
 ]
-
-const STATUS_CONFIG = {
-  paid:    { label: "Pago",     icon: CheckCircle2, cls: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" },
-  pending: { label: "Pendente", icon: Clock,         cls: "text-amber-400 border-amber-500/40 bg-amber-500/10" },
-  overdue: { label: "Vencido",  icon: XCircle,       cls: "text-red-400 border-red-500/40 bg-red-500/10" },
-}
 
 // ─── Metric Card ──────────────────────────────────────────────────────────────
 
@@ -188,6 +174,7 @@ function TxModal({ open, onClose, onSaved, editTx, defaultType }: {
   const [form, setForm] = useState<TxFormData>(emptyTxForm(defaultType ?? "income"))
   const [saving, setSaving] = useState(false)
   const [syncedFor, setSyncedFor] = useState<string | null>(null)
+  const [showMore, setShowMore] = useState(false)
 
   // Reset the form whenever the modal opens for a (possibly different)
   // transaction — done during render per React's "adjusting state when a
@@ -195,6 +182,7 @@ function TxModal({ open, onClose, onSaved, editTx, defaultType }: {
   const syncKey = open ? (editTx ? editTx.id : `new-${defaultType ?? "income"}`) : null
   if (syncKey !== null && syncKey !== syncedFor) {
     setSyncedFor(syncKey)
+    setShowMore(!!editTx)
     if (editTx) {
       setForm({
         type: editTx.type, description: editTx.description, category: editTx.category,
@@ -293,46 +281,58 @@ function TxModal({ open, onClose, onSaved, editTx, defaultType }: {
                   placeholder="Ex: Projeto, Mensalidade..." className="h-9" />
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Forma de pagamento</Label>
-              <select value={form.payment_method} onChange={e => set({ payment_method: e.target.value })}
-                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                {PAYMENT_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-              </select>
-            </div>
-            {form.type === "income" && (
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Cliente</Label>
-                <Input value={form.client_name} onChange={e => set({ client_name: e.target.value })}
-                  placeholder="Nome do cliente" className="h-9" />
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Vencimento</Label>
-              <Input type="date" value={form.due_date} onChange={e => set({ due_date: e.target.value })} className="h-9" />
-            </div>
-            {form.status === "paid" && (
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Data do pagamento</Label>
-                <Input type="date" value={form.paid_date} onChange={e => set({ paid_date: e.target.value })} className="h-9" />
-              </div>
-            )}
-            <div className="col-span-2 flex items-center gap-3">
-              <input type="checkbox" id="recurring" checked={form.is_recurring}
-                onChange={e => set({ is_recurring: e.target.checked })}
-                className="h-4 w-4 rounded border-border" />
-              <Label htmlFor="recurring" className="text-xs text-muted-foreground cursor-pointer">Recorrente</Label>
-              {form.is_recurring && (
-                <select value={form.recurrence} onChange={e => set({ recurrence: e.target.value })}
-                  className="h-8 rounded-md border border-input bg-background px-2 text-xs ml-auto">
-                  <option value="monthly">Mensal</option>
-                  <option value="quarterly">Trimestral</option>
-                  <option value="semiannual">Semestral</option>
-                  <option value="annual">Anual</option>
-                </select>
-              )}
-            </div>
           </div>
+
+          <button type="button" onClick={() => setShowMore(s => !s)}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", showMore && "rotate-180")} />
+            Mais opções
+          </button>
+
+          {showMore && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Forma de pagamento</Label>
+                <select value={form.payment_method} onChange={e => set({ payment_method: e.target.value })}
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
+                  {PAYMENT_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                </select>
+              </div>
+              {form.type === "income" && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Cliente</Label>
+                  <Input value={form.client_name} onChange={e => set({ client_name: e.target.value })}
+                    placeholder="Nome do cliente" className="h-9" />
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Vencimento</Label>
+                <Input type="date" value={form.due_date} onChange={e => set({ due_date: e.target.value })} className="h-9" />
+              </div>
+              {form.status === "paid" && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Data do pagamento</Label>
+                  <Input type="date" value={form.paid_date} onChange={e => set({ paid_date: e.target.value })} className="h-9" />
+                </div>
+              )}
+              <div className="col-span-2 flex items-center gap-3">
+                <input type="checkbox" id="recurring" checked={form.is_recurring}
+                  onChange={e => set({ is_recurring: e.target.checked })}
+                  className="h-4 w-4 rounded border-border" />
+                <Label htmlFor="recurring" className="text-xs text-muted-foreground cursor-pointer">Recorrente</Label>
+                {form.is_recurring && (
+                  <select value={form.recurrence} onChange={e => set({ recurrence: e.target.value })}
+                    className="h-8 rounded-md border border-input bg-background px-2 text-xs ml-auto">
+                    <option value="monthly">Mensal</option>
+                    <option value="quarterly">Trimestral</option>
+                    <option value="semiannual">Semestral</option>
+                    <option value="annual">Anual</option>
+                  </select>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2 pt-2">
             <Button type="submit" disabled={saving} className="flex-1">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar"}
@@ -342,6 +342,66 @@ function TxModal({ open, onClose, onSaved, editTx, defaultType }: {
         </form>
       </div>
     </div>
+  )
+}
+
+// ─── Quick Add Bar ────────────────────────────────────────────────────────────
+
+function QuickAddBar({ onSaved }: { onSaved: () => void }) {
+  const [type, setType] = useState<"income" | "expense">("income")
+  const [description, setDescription] = useState("")
+  const [amount, setAmount] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!description.trim() || !amount) return
+    setSaving(true)
+    try {
+      const today = format(new Date(), "yyyy-MM-dd")
+      const res = await fetch("/api/financeiro/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type, description, amount: parseFloat(amount),
+          category: type === "expense" ? "Outros" : "",
+          payment_method: "pix", status: "paid",
+          due_date: today, paid_date: today,
+          is_recurring: false, recurrence: "monthly", notes: "",
+        }),
+      })
+      if (!res.ok) throw new Error((await res.json()).error)
+      toast.success(type === "income" ? "Receita adicionada!" : "Despesa adicionada!")
+      setDescription(""); setAmount("")
+      onSaved()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar")
+    } finally { setSaving(false) }
+  }
+
+  return (
+    <form onSubmit={submit} className="flex flex-wrap items-center gap-2 rounded-lg border border-border/40 bg-card/40 p-2 mb-3">
+      <div className="flex gap-1">
+        <Button type="button" size="sm" variant={type === "income" ? "default" : "outline"}
+          className={cn("h-8 text-xs", type === "income" && "bg-emerald-600 hover:bg-emerald-700")}
+          onClick={() => setType("income")}>
+          Entrada
+        </Button>
+        <Button type="button" size="sm" variant={type === "expense" ? "default" : "outline"}
+          className={cn("h-8 text-xs", type === "expense" && "bg-red-600 hover:bg-red-700")}
+          onClick={() => setType("expense")}>
+          Saída
+        </Button>
+      </div>
+      <Input value={description} onChange={e => setDescription(e.target.value)}
+        placeholder="Lançamento rápido — descrição..." className="h-8 flex-1 min-w-[140px]" />
+      <Input type="number" step="0.01" min="0" value={amount} onChange={e => setAmount(e.target.value)}
+        placeholder="Valor" className="h-8 w-28" />
+      <Button type="submit" size="sm" disabled={saving} className="h-8 gap-1">
+        {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+        Lançar
+      </Button>
+    </form>
   )
 }
 
@@ -359,6 +419,13 @@ export function FinanceiroClient() {
 
   const [txFilter, setTxFilter] = useState<"" | "income" | "expense">("")
   const [chartPeriod, setChartPeriod] = useState<"7d" | "month" | "6m" | "12m">("6m")
+
+  const now = new Date()
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1)
+  const [monthSheetOpen, setMonthSheetOpen] = useState(false)
+  const [reportYear, setReportYear] = useState(now.getFullYear())
+  const [yearReport, setYearReport] = useState<Pick<Metrics, "year_income" | "year_expense" | "year_profit" | "year_chart"> | null>(null)
+  const [yearLoading, setYearLoading] = useState(true)
 
   const loadMetrics = useCallback(async () => {
     setLoading(true)
@@ -378,6 +445,17 @@ export function FinanceiroClient() {
     } finally { setTxLoading(false) }
   }, [txFilter])
 
+  const loadYearReport = useCallback(async (year: number) => {
+    setYearLoading(true)
+    try {
+      const res = await fetch(`/api/financeiro/metrics?year=${year}`)
+      if (res.ok) {
+        const data: Metrics = await res.json()
+        setYearReport({ year_income: data.year_income, year_expense: data.year_expense, year_profit: data.year_profit, year_chart: data.year_chart })
+      }
+    } finally { setYearLoading(false) }
+  }, [])
+
   // Fetch-on-mount/filter-change: loadMetrics/loadTransactions set their own
   // loading flags synchronously, which is the point (show a loading state
   // immediately on refetch) — not an accidental cascading render.
@@ -385,11 +463,30 @@ export function FinanceiroClient() {
   useEffect(() => { loadMetrics() }, [loadMetrics])
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadTransactions() }, [loadTransactions])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { loadYearReport(reportYear) }, [reportYear, loadYearReport])
 
   function openNew(type: "income" | "expense") {
     setEditTx(null)
     setDefaultType(type)
     setTxModal(true)
+  }
+
+  function openMonth(m: number) {
+    setSelectedMonth(m)
+    setMonthSheetOpen(true)
+  }
+
+  function editFromMonthSheet(tx: Transaction) {
+    setMonthSheetOpen(false)
+    setEditTx(tx)
+    setTxModal(true)
+  }
+
+  function refreshAll() {
+    loadMetrics()
+    loadTransactions()
+    loadYearReport(reportYear)
   }
 
   async function markPaid(tx: Transaction) {
@@ -398,13 +495,13 @@ export function FinanceiroClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "paid", paid_date: format(new Date(), "yyyy-MM-dd") }),
     })
-    if (res.ok) { toast.success("Marcado como pago!"); loadTransactions(); loadMetrics() }
+    if (res.ok) { toast.success("Marcado como pago!"); loadTransactions(); loadMetrics(); loadYearReport(reportYear) }
   }
 
   async function deleteTx(id: string) {
     if (!confirm("Excluir transação?")) return
     const res = await fetch(`/api/financeiro/transactions/${id}`, { method: "DELETE" })
-    if (res.ok) { toast.success("Excluído"); loadTransactions(); loadMetrics() }
+    if (res.ok) { toast.success("Excluído"); loadTransactions(); loadMetrics(); loadYearReport(reportYear) }
   }
 
   const allChart = metrics?.chart ?? []
@@ -423,7 +520,7 @@ export function FinanceiroClient() {
           <p className="text-xs text-muted-foreground">Controle financeiro da Nexus Digital</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={() => { loadMetrics(); loadTransactions() }} className="gap-1.5 h-8">
+          <Button size="sm" variant="outline" onClick={refreshAll} className="gap-1.5 h-8">
             <RefreshCw className="h-3.5 w-3.5" />
             Atualizar
           </Button>
@@ -437,6 +534,24 @@ export function FinanceiroClient() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+
+        {/* Month strip — click a month to see its income/expenses */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <span className="text-xs text-muted-foreground mr-0.5 flex-shrink-0">Ver mês:</span>
+          {MONTH_SHORT.map((label, i) => {
+            const m = i + 1
+            const isCurrent = m === now.getMonth() + 1
+            return (
+              <button key={m} onClick={() => openMonth(m)}
+                className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors flex-shrink-0 capitalize",
+                  isCurrent
+                    ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
+                    : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
+                {label}
+              </button>
+            )
+          })}
+        </div>
 
         {/* 4 Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -543,52 +658,74 @@ export function FinanceiroClient() {
           </Card>
         </div>
 
-        {/* Bar chart — faturamento por mês */}
+        {/* Relatório anual */}
         <Card className="border-border/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Faturamento por mês (últimos 12 meses)</CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-sm font-medium">Relatório anual</CardTitle>
+              <div className="flex items-center gap-1">
+                <button onClick={() => setReportYear(y => y - 1)} aria-label="Ano anterior"
+                  className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <span className="text-sm font-medium text-foreground tabular-nums w-12 text-center">{reportYear}</span>
+                <button onClick={() => setReportYear(y => y + 1)} aria-label="Próximo ano"
+                  disabled={reportYear >= now.getFullYear()}
+                  className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Entradas do ano</p>
+                <p className="text-lg font-semibold text-emerald-400 tabular-nums">
+                  {yearLoading ? <span className="h-6 w-24 bg-muted/50 rounded animate-pulse block" /> : fmt(yearReport?.year_income ?? 0)}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Saídas do ano</p>
+                <p className="text-lg font-semibold text-red-400 tabular-nums">
+                  {yearLoading ? <span className="h-6 w-24 bg-muted/50 rounded animate-pulse block" /> : fmt(yearReport?.year_expense ?? 0)}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Lucro do ano</p>
+                <p className={cn("text-lg font-semibold tabular-nums",
+                  (yearReport?.year_profit ?? 0) >= 0 ? "text-foreground" : "text-red-400")}>
+                  {yearLoading ? <span className="h-6 w-24 bg-muted/50 rounded animate-pulse block" /> : fmt(yearReport?.year_profit ?? 0)}
+                </p>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={allChart} margin={{ top: 24, right: 10, left: 0, bottom: 0 }} barSize={28}>
+              <BarChart data={yearReport?.year_chart ?? []} margin={{ top: 8, right: 10, left: 0, bottom: 0 }} barSize={12}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} vertical={false} />
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip
-                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }}
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload?.length) return null
-                    return (
-                      <div className="bg-card border border-border/50 rounded-lg p-3 shadow-xl text-xs space-y-1">
-                        <p className="font-semibold text-foreground mb-1">{label}</p>
-                        <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-blue-500" />
-                          <span className="text-muted-foreground">Faturamento</span>
-                          <span className="font-semibold text-foreground ml-auto">{fmt(payload[0].value as number)}</span>
-                        </div>
-                      </div>
-                    )
-                  }}
-                />
-                <Bar dataKey="income" radius={[4, 4, 0, 0]}>
-                  {allChart.map((entry, i) => {
-                    const isLatest = i === allChart.length - 1
-                    return <Cell key={i} fill={isLatest ? "#3b82f6" : "#1e3a5f"} />
-                  })}
-                  <LabelList
-                    dataKey="income"
-                    position="top"
-                    formatter={(v: unknown) => typeof v === "number" && v > 0 ? fmt(v) : ""}
-                    style={{ fontSize: 10, fill: "#94a3b8", fontVariantNumeric: "tabular-nums" }}
-                  />
-                </Bar>
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }} />
+                <Bar dataKey="income" name="income" fill="#10b981" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="expense" name="expense" fill="#ef4444" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            <div className="flex gap-4 justify-center">
+              {[
+                { label: "Entradas", color: "#10b981" },
+                { label: "Saídas", color: "#ef4444" },
+              ].map(l => (
+                <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
+                  {l.label}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
         {/* Transactions */}
         <div>
+          <QuickAddBar onSaved={refreshAll} />
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-medium text-foreground">Transações recentes</h2>
             <div className="flex gap-1">
@@ -685,9 +822,18 @@ export function FinanceiroClient() {
       <TxModal
         open={txModal}
         onClose={() => { setTxModal(false); setEditTx(null) }}
-        onSaved={() => { loadTransactions(); loadMetrics() }}
+        onSaved={() => { loadTransactions(); loadMetrics(); loadYearReport(reportYear) }}
         editTx={editTx}
         defaultType={defaultType}
+      />
+
+      <MonthDetailSheet
+        open={monthSheetOpen}
+        month={selectedMonth}
+        year={now.getFullYear()}
+        onClose={() => setMonthSheetOpen(false)}
+        onEdit={editFromMonthSheet}
+        onChanged={refreshAll}
       />
     </div>
   )

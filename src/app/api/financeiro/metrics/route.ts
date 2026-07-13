@@ -2,12 +2,17 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/services/supabase/server"
 import { startOfMonth, endOfMonth, startOfWeek, format, subMonths } from "date-fns"
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const now = new Date()
+  const { searchParams } = new URL(request.url)
+  const year = Number(searchParams.get("year")) || now.getFullYear()
+  const yearStart = `${year}-01-01`
+  const yearEnd = `${year}-12-31`
+
   const monthStart = format(startOfMonth(now), "yyyy-MM-dd")
   const monthEnd = format(endOfMonth(now), "yyyy-MM-dd")
   const today = format(now, "yyyy-MM-dd")
@@ -15,7 +20,7 @@ export async function GET() {
   const prevMonthStart = format(startOfMonth(subMonths(now, 1)), "yyyy-MM-dd")
   const prevMonthEnd = format(endOfMonth(subMonths(now, 1)), "yyyy-MM-dd")
 
-  const [txRes, clientsRes, prevTxRes, goalRes, chartRes] = await Promise.all([
+  const [txRes, clientsRes, prevTxRes, goalRes, chartRes, yearRes] = await Promise.all([
     supabase.from("financial_transactions").select("*").eq("user_id", user.id),
     supabase.from("financial_clients").select("*").eq("user_id", user.id),
     supabase.from("financial_transactions").select("*").eq("user_id", user.id)
@@ -25,12 +30,15 @@ export async function GET() {
     supabase.from("financial_transactions").select("*").eq("user_id", user.id)
       .gte("due_date", format(subMonths(now, 11), "yyyy-MM-dd"))
       .order("due_date"),
+    supabase.from("financial_transactions").select("*").eq("user_id", user.id)
+      .gte("due_date", yearStart).lte("due_date", yearEnd).eq("status", "paid"),
   ])
 
   const all = txRes.data ?? []
   const prevPaid = prevTxRes.data ?? []
   const clients = clientsRes.data ?? []
   const chart = chartRes.data ?? []
+  const yearPaid = yearRes.data ?? []
 
   const thisMonth = all.filter(t => t.due_date >= monthStart && t.due_date <= monthEnd)
   const paid = thisMonth.filter(t => t.status === "paid")
@@ -89,6 +97,29 @@ export async function GET() {
 
   const goal = goalRes.data ?? null
 
+  // Yearly report: fixed Jan-Dec of the requested calendar year
+  const yearMonthMap: Record<string, { income: number; expense: number; profit: number }> = {}
+  for (let m = 1; m <= 12; m++) {
+    yearMonthMap[`${year}-${String(m).padStart(2, "0")}`] = { income: 0, expense: 0, profit: 0 }
+  }
+  for (const t of yearPaid) {
+    if (!t.due_date) continue
+    const m = t.due_date.slice(0, 7)
+    if (!yearMonthMap[m]) continue
+    if (t.type === "income") yearMonthMap[m].income += Number(t.amount)
+    else yearMonthMap[m].expense += Number(t.amount)
+  }
+  for (const m of Object.keys(yearMonthMap)) {
+    yearMonthMap[m].profit = yearMonthMap[m].income - yearMonthMap[m].expense
+  }
+  const yearChart = Object.entries(yearMonthMap).map(([month, v]) => ({
+    month,
+    label: new Date(month + "-01").toLocaleDateString("pt-BR", { month: "short" }),
+    ...v,
+  }))
+  const yearIncome = yearPaid.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0)
+  const yearExpense = yearPaid.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0)
+
   return NextResponse.json({
     receita_mes: paidIncome,
     despesas_mes: paidExpense,
@@ -114,6 +145,11 @@ export async function GET() {
     media_mensal: chartData.length > 0 ? chartData.reduce((s, m) => s + m.income, 0) / chartData.filter(m => m.income > 0).length : 0,
     best_month: bestMonth.label,
     chart: chartData,
+    year,
+    year_income: yearIncome,
+    year_expense: yearExpense,
+    year_profit: yearIncome - yearExpense,
+    year_chart: yearChart,
     goal: goal ? { target: Number(goal.target_amount), current: paidIncome } : null,
   })
 }
