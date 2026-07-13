@@ -12,14 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import {
-  TrendingUp, TrendingDown, DollarSign, Wallet,
+  TrendingUp, TrendingDown, DollarSign, Wallet, Clock,
   Plus, Pencil, Trash2, CheckCircle2,
   Loader2, RefreshCw, ArrowUpRight, ArrowDownRight, X, ChevronDown, ChevronLeft, ChevronRight,
 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { fmt, STATUS_CONFIG, type Transaction } from "./types"
-import { MonthDetailSheet } from "./month-detail-sheet"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -60,6 +59,8 @@ const EXPENSE_CATEGORIES = [
 
 const MONTH_SHORT = Array.from({ length: 12 }, (_, i) =>
   new Date(2024, i, 1).toLocaleDateString("pt-BR", { month: "short" }))
+const MONTH_LONG = Array.from({ length: 12 }, (_, i) =>
+  new Date(2024, i, 1).toLocaleDateString("pt-BR", { month: "long" }))
 
 const PAYMENT_METHODS = [
   { value: "pix", label: "PIX" },
@@ -421,11 +422,11 @@ export function FinanceiroClient() {
   const [chartPeriod, setChartPeriod] = useState<"7d" | "month" | "6m" | "12m">("6m")
 
   const now = new Date()
-  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1)
-  const [monthSheetOpen, setMonthSheetOpen] = useState(false)
+  const [selectedPeriod, setSelectedPeriod] = useState<"year" | number>(now.getMonth() + 1)
   const [reportYear, setReportYear] = useState(now.getFullYear())
   const [yearReport, setYearReport] = useState<Pick<Metrics, "year_income" | "year_expense" | "year_profit" | "year_chart"> | null>(null)
   const [yearLoading, setYearLoading] = useState(true)
+  const [pendOpen, setPendOpen] = useState(false)
 
   const loadMetrics = useCallback(async () => {
     setLoading(true)
@@ -472,17 +473,6 @@ export function FinanceiroClient() {
     setTxModal(true)
   }
 
-  function openMonth(m: number) {
-    setSelectedMonth(m)
-    setMonthSheetOpen(true)
-  }
-
-  function editFromMonthSheet(tx: Transaction) {
-    setMonthSheetOpen(false)
-    setEditTx(tx)
-    setTxModal(true)
-  }
-
   function refreshAll() {
     loadMetrics()
     loadTransactions()
@@ -511,6 +501,23 @@ export function FinanceiroClient() {
     : chartPeriod === "6m"    ? allChart.slice(-6)
     : allChart
 
+  // The current-month figures come from `metrics` (which also carries the
+  // vs-previous-month comparison); any other period is read from the
+  // per-year monthly breakdown already fetched for the annual report card.
+  const isCurrentMonthView = selectedPeriod !== "year" && selectedPeriod === now.getMonth() + 1 && reportYear === now.getFullYear()
+  const periodStats = selectedPeriod === "year"
+    ? { income: yearReport?.year_income ?? 0, expense: yearReport?.year_expense ?? 0, profit: yearReport?.year_profit ?? 0,
+        prevIncome: undefined, prevExpense: undefined, prevProfit: undefined }
+    : isCurrentMonthView
+      ? { income: metrics?.receita_mes ?? 0, expense: metrics?.despesas_mes ?? 0, profit: metrics?.lucro_liquido ?? 0,
+          prevIncome: metrics?.prev_income, prevExpense: metrics?.prev_expense, prevProfit: metrics?.prev_profit }
+      : { income: yearReport?.year_chart?.[selectedPeriod - 1]?.income ?? 0,
+          expense: yearReport?.year_chart?.[selectedPeriod - 1]?.expense ?? 0,
+          profit: yearReport?.year_chart?.[selectedPeriod - 1]?.profit ?? 0,
+          prevIncome: undefined, prevExpense: undefined, prevProfit: undefined }
+  const periodCardsLoading = isCurrentMonthView ? loading : yearLoading
+  const periodLabel = selectedPeriod === "year" ? "do ano" : isCurrentMonthView ? "do mês" : `de ${MONTH_LONG[selectedPeriod - 1]}`
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -535,16 +542,32 @@ export function FinanceiroClient() {
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
-        {/* Month strip — click a month to see its income/expenses */}
+        {/* Period strip — pick a month or the whole year; updates the cards below in place */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-          <span className="text-xs text-muted-foreground mr-0.5 flex-shrink-0">Ver mês:</span>
+          <button onClick={() => setReportYear(y => y - 1)} aria-label="Ano anterior"
+            className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+          <span className="text-xs text-muted-foreground tabular-nums flex-shrink-0 w-10 text-center">{reportYear}</span>
+          <button onClick={() => setReportYear(y => y + 1)} aria-label="Próximo ano" disabled={reportYear >= now.getFullYear()}
+            className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-30 disabled:pointer-events-none flex-shrink-0">
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+          <span className="w-px h-4 bg-border/50 mx-1 flex-shrink-0" />
+          <button onClick={() => setSelectedPeriod("year")}
+            className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors flex-shrink-0",
+              selectedPeriod === "year"
+                ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
+                : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
+            Ano
+          </button>
           {MONTH_SHORT.map((label, i) => {
             const m = i + 1
-            const isCurrent = m === now.getMonth() + 1
+            const isActive = selectedPeriod === m
             return (
-              <button key={m} onClick={() => openMonth(m)}
+              <button key={m} onClick={() => setSelectedPeriod(m)}
                 className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors flex-shrink-0 capitalize",
-                  isCurrent
+                  isActive
                     ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
                     : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
                 {label}
@@ -555,108 +578,111 @@ export function FinanceiroClient() {
 
         {/* 4 Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard title="Receita do mês"  value={metrics?.receita_mes ?? 0}   prev={metrics?.prev_income}  icon={TrendingUp}   color="emerald" skeleton={loading} />
-          <MetricCard title="Despesas do mês" value={metrics?.despesas_mes ?? 0}  prev={metrics?.prev_expense} icon={TrendingDown}  color="red"     skeleton={loading} />
-          <MetricCard title="Lucro líquido"   value={metrics?.lucro_liquido ?? 0} prev={metrics?.prev_profit}  icon={DollarSign}   color="violet"  skeleton={loading} />
-          <MetricCard title="Fluxo de caixa"  value={metrics?.fluxo_caixa ?? 0}                               icon={Wallet}       color="blue"    skeleton={loading} />
+          <MetricCard title={`Receita ${periodLabel}`}  value={periodStats.income}  prev={periodStats.prevIncome}  icon={TrendingUp}   color="emerald" skeleton={periodCardsLoading} />
+          <MetricCard title={`Despesas ${periodLabel}`} value={periodStats.expense} prev={periodStats.prevExpense} icon={TrendingDown}  color="red"     skeleton={periodCardsLoading} />
+          <MetricCard title="Lucro líquido"             value={periodStats.profit}  prev={periodStats.prevProfit}  icon={DollarSign}   color="violet"  skeleton={periodCardsLoading} />
+          <MetricCard title="Fluxo de caixa"            value={metrics?.fluxo_caixa ?? 0}                          icon={Wallet}       color="blue"    skeleton={loading} />
         </div>
 
-        {/* Chart + Pending summary */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 border-border/40">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <CardTitle className="text-sm font-medium">Evolução financeira</CardTitle>
-                <div className="flex gap-1">
-                  {([
-                    { value: "7d",    label: "7 dias" },
-                    { value: "month", label: "Mês atual" },
-                    { value: "6m",    label: "6 meses" },
-                    { value: "12m",   label: "12 meses" },
-                  ] as const).map(o => (
-                    <button key={o.value} onClick={() => setChartPeriod(o.value)}
-                      className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors",
-                        chartPeriod === o.value
-                          ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
-                          : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <ResponsiveContainer width="100%" height={240}>
-                <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="g-income" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="g-expense" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#ef4444" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="g-profit" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} />
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                    tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={44} />
-                  <Tooltip content={<ChartTooltip />} />
-                  <Area type="monotone" dataKey="income"  stroke="#10b981" strokeWidth={2} fill="url(#g-income)"  dot={false} activeDot={{ r: 4 }} />
-                  <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} fill="url(#g-expense)" dot={false} activeDot={{ r: 4 }} />
-                  <Area type="monotone" dataKey="profit"  stroke="#8b5cf6" strokeWidth={2} fill="url(#g-profit)"  dot={false} activeDot={{ r: 4 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-              <div className="flex gap-4 mt-2 justify-center">
-                {[
-                  { label: "Receita",  color: "#10b981" },
-                  { label: "Despesas", color: "#ef4444" },
-                  { label: "Lucro",    color: "#8b5cf6" },
-                ].map(l => (
-                  <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
-                    {l.label}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Pending */}
-          <Card className="border-border/40">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Pendências</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {/* Pendências — collapsed by default, click to expand */}
+        <Card className="border-border/40">
+          <button onClick={() => setPendOpen(o => !o)}
+            className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left">
+            <div className="flex items-center gap-2 text-xs min-w-0">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium text-foreground flex-shrink-0">Pendências</span>
+              <span className="text-muted-foreground truncate">
+                A receber <span className="text-emerald-400 font-medium">{fmt(metrics?.contas_receber ?? 0)}</span>
+                {" · "}A pagar <span className="text-red-400 font-medium">{fmt(metrics?.contas_pagar ?? 0)}</span>
+              </span>
+            </div>
+            <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform flex-shrink-0", pendOpen && "rotate-180")} />
+          </button>
+          {pendOpen && (
+            <div className="grid grid-cols-3 gap-4 px-4 pb-4 pt-1 border-t border-border/40 mt-1">
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">A receber</p>
-                <p className="text-2xl font-semibold text-emerald-400 tabular-nums">
-                  {loading ? <span className="h-7 w-28 bg-muted/50 rounded animate-pulse block" /> : fmt(metrics?.contas_receber ?? 0)}
-                </p>
+                <p className="text-lg font-semibold text-emerald-400 tabular-nums">{fmt(metrics?.contas_receber ?? 0)}</p>
               </div>
-              <div className="h-px bg-border/40" />
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">A pagar</p>
-                <p className="text-2xl font-semibold text-red-400 tabular-nums">
-                  {loading ? <span className="h-7 w-28 bg-muted/50 rounded animate-pulse block" /> : fmt(metrics?.contas_pagar ?? 0)}
-                </p>
+                <p className="text-lg font-semibold text-red-400 tabular-nums">{fmt(metrics?.contas_pagar ?? 0)}</p>
               </div>
-              <div className="h-px bg-border/40" />
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Saldo pendente</p>
-                <p className={cn("text-xl font-semibold tabular-nums",
+                <p className={cn("text-lg font-semibold tabular-nums",
                   (metrics?.contas_receber ?? 0) >= (metrics?.contas_pagar ?? 0) ? "text-foreground" : "text-red-400")}>
-                  {loading ? <span className="h-6 w-24 bg-muted/50 rounded animate-pulse block" /> : fmt((metrics?.contas_receber ?? 0) - (metrics?.contas_pagar ?? 0))}
+                  {fmt((metrics?.contas_receber ?? 0) - (metrics?.contas_pagar ?? 0))}
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Evolução financeira */}
+        <Card className="border-border/40">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-sm font-medium">Evolução financeira</CardTitle>
+              <div className="flex gap-1">
+                {([
+                  { value: "7d",    label: "7 dias" },
+                  { value: "month", label: "Mês atual" },
+                  { value: "6m",    label: "6 meses" },
+                  { value: "12m",   label: "12 meses" },
+                ] as const).map(o => (
+                  <button key={o.value} onClick={() => setChartPeriod(o.value)}
+                    className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors",
+                      chartPeriod === o.value
+                        ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
+                        : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="g-income" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="g-expense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#ef4444" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="g-profit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                  tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={44} />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="income"  stroke="#10b981" strokeWidth={2} fill="url(#g-income)"  dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} fill="url(#g-expense)" dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="profit"  stroke="#8b5cf6" strokeWidth={2} fill="url(#g-profit)"  dot={false} activeDot={{ r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+            <div className="flex gap-4 mt-2 justify-center">
+              {[
+                { label: "Receita",  color: "#10b981" },
+                { label: "Despesas", color: "#ef4444" },
+                { label: "Lucro",    color: "#8b5cf6" },
+              ].map(l => (
+                <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
+                  {l.label}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Relatório anual */}
         <Card className="border-border/40">
@@ -825,15 +851,6 @@ export function FinanceiroClient() {
         onSaved={() => { loadTransactions(); loadMetrics(); loadYearReport(reportYear) }}
         editTx={editTx}
         defaultType={defaultType}
-      />
-
-      <MonthDetailSheet
-        open={monthSheetOpen}
-        month={selectedMonth}
-        year={now.getFullYear()}
-        onClose={() => setMonthSheetOpen(false)}
-        onEdit={editFromMonthSheet}
-        onChanged={refreshAll}
       />
     </div>
   )
