@@ -619,71 +619,6 @@ export function FinanceiroClient() {
           )}
         </Card>
 
-        {/* Evolução financeira */}
-        <Card className="border-border/40">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-sm font-medium">Evolução financeira</CardTitle>
-              <div className="flex gap-1">
-                {([
-                  { value: "7d",    label: "7 dias" },
-                  { value: "month", label: "Mês atual" },
-                  { value: "6m",    label: "6 meses" },
-                  { value: "12m",   label: "12 meses" },
-                ] as const).map(o => (
-                  <button key={o.value} onClick={() => setChartPeriod(o.value)}
-                    className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors",
-                      chartPeriod === o.value
-                        ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
-                        : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <ResponsiveContainer width="100%" height={240}>
-              <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="g-income" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="g-expense" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#ef4444" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="g-profit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                  tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={44} />
-                <Tooltip content={<ChartTooltip />} />
-                <Area type="monotone" dataKey="income"  stroke="#10b981" strokeWidth={2} fill="url(#g-income)"  dot={false} activeDot={{ r: 4 }} />
-                <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} fill="url(#g-expense)" dot={false} activeDot={{ r: 4 }} />
-                <Area type="monotone" dataKey="profit"  stroke="#8b5cf6" strokeWidth={2} fill="url(#g-profit)"  dot={false} activeDot={{ r: 4 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-            <div className="flex gap-4 mt-2 justify-center">
-              {[
-                { label: "Receita",  color: "#10b981" },
-                { label: "Despesas", color: "#ef4444" },
-                { label: "Lucro",    color: "#8b5cf6" },
-              ].map(l => (
-                <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
-                  {l.label}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Relatório anual */}
         <Card className="border-border/40">
           <CardHeader className="pb-2">
@@ -739,6 +674,71 @@ export function FinanceiroClient() {
               {[
                 { label: "Entradas", color: "#10b981" },
                 { label: "Saídas", color: "#ef4444" },
+              ].map(l => (
+                <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
+                  {l.label}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Evolução financeira */}
+        <Card className="border-border/40">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-sm font-medium">Evolução financeira</CardTitle>
+              <div className="flex gap-1">
+                {([
+                  { value: "7d",    label: "7 dias" },
+                  { value: "month", label: "Mês atual" },
+                  { value: "6m",    label: "6 meses" },
+                  { value: "12m",   label: "12 meses" },
+                ] as const).map(o => (
+                  <button key={o.value} onClick={() => setChartPeriod(o.value)}
+                    className={cn("px-2.5 py-1 rounded-full text-xs border transition-colors",
+                      chartPeriod === o.value
+                        ? "border-violet-500/60 bg-violet-500/10 text-violet-400"
+                        : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground")}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="g-income" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="g-expense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#ef4444" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="g-profit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" strokeOpacity={0.8} />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                  tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={44} />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="income"  stroke="#10b981" strokeWidth={2} fill="url(#g-income)"  dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} fill="url(#g-expense)" dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="profit"  stroke="#8b5cf6" strokeWidth={2} fill="url(#g-profit)"  dot={false} activeDot={{ r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+            <div className="flex gap-4 mt-2 justify-center">
+              {[
+                { label: "Receita",  color: "#10b981" },
+                { label: "Despesas", color: "#ef4444" },
+                { label: "Lucro",    color: "#8b5cf6" },
               ].map(l => (
                 <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="h-2 w-2 rounded-full" style={{ background: l.color }} />
