@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/layout/Container";
 import { JsonLd } from "@/components/layout/JsonLd";
+import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/metadata";
@@ -55,6 +56,16 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <Badge variant="outline">{project.category}</Badge>
           <h1 className="text-title text-foreground max-w-2xl font-semibold">{project.title}</h1>
           <p className="text-muted-foreground text-body max-w-2xl">{project.summary}</p>
+          {project.url && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              render={<a href={project.url} target="_blank" rel="noopener noreferrer" />}
+            >
+              Visitar site
+              <ExternalLink className="size-4" />
+            </Button>
+          )}
         </Container>
 
         <Container className="mt-16">

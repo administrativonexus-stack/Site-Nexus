@@ -26,6 +26,7 @@ interface PortfolioProjectRow {
   description: string | null;
   technologies: string[] | null;
   thumbnail_url: string | null;
+  url: string | null;
   is_favorite: boolean;
   created_at: string;
 }
@@ -55,6 +56,7 @@ function mapRowToProject(row: PortfolioProjectRow, usedSlugs: Set<string>): Proj
     results: [],
     tall: row.is_favorite,
     coverImage: row.thumbnail_url ?? undefined,
+    url: row.url ?? undefined,
   };
 }
 
@@ -63,7 +65,7 @@ async function fetchPortalProjects(): Promise<Project[] | null> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("portfolio_projects")
-      .select("id, name, category, description, technologies, thumbnail_url, is_favorite, created_at")
+      .select("id, name, category, description, technologies, thumbnail_url, url, is_favorite, created_at")
       .eq("status", "active")
       .order("is_favorite", { ascending: false })
       .order("created_at", { ascending: false });

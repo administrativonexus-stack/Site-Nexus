@@ -33,6 +33,7 @@ export interface Project {
   results: ProjectResult[];
   tall: boolean;
   coverImage?: string;
+  url?: string;
 }
 
 /**
