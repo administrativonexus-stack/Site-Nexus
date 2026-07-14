@@ -11,6 +11,10 @@ import { buildMetadata } from "@/lib/metadata";
 import { projectSchema } from "@/lib/seo";
 import { getProjectBySlug, getProjects } from "@/services/portfolio";
 
+// Projects are now managed live in the Portal (/portal/portfolio) — revalidate
+// periodically instead of only at build time.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const projects = await getProjects();
   return projects.map((project) => ({ slug: project.slug }));
@@ -57,25 +61,36 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <div
             className={`from-primary/20 to-secondary/20 relative h-72 overflow-hidden rounded-xl bg-gradient-to-br md:h-96`}
           >
-            <span
-              aria-hidden="true"
-              className="text-foreground/10 absolute -right-6 -bottom-10 text-9xl font-bold select-none"
-            >
-              {project.title.slice(0, 2).toUpperCase()}
-            </span>
+            {project.coverImage ? (
+              // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL from the Portal, not whitelistable for next/image
+              <img
+                src={project.coverImage}
+                alt={project.title}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="text-foreground/10 absolute -right-6 -bottom-10 text-9xl font-bold select-none"
+              >
+                {project.title.slice(0, 2).toUpperCase()}
+              </span>
+            )}
           </div>
         </Container>
 
-        <Container className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2">
-          <div>
-            <h2 className="text-foreground text-lg font-medium">Problema</h2>
-            <p className="text-muted-foreground text-body mt-3">{project.challenge}</p>
-          </div>
-          <div>
-            <h2 className="text-foreground text-lg font-medium">Solução</h2>
-            <p className="text-muted-foreground text-body mt-3">{project.solution}</p>
-          </div>
-        </Container>
+        {project.challenge && project.solution && (
+          <Container className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2">
+            <div>
+              <h2 className="text-foreground text-lg font-medium">Problema</h2>
+              <p className="text-muted-foreground text-body mt-3">{project.challenge}</p>
+            </div>
+            <div>
+              <h2 className="text-foreground text-lg font-medium">Solução</h2>
+              <p className="text-muted-foreground text-body mt-3">{project.solution}</p>
+            </div>
+          </Container>
+        )}
 
         <Container className="mt-16">
           <h2 className="text-foreground text-lg font-medium">Tecnologias</h2>

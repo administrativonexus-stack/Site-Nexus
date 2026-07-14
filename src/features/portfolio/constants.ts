@@ -11,13 +11,36 @@ export const PORTFOLIO_PAGE_CONTENT = {
     "Conheça os sistemas, automações e produtos de IA que desenvolvemos para empresas que decidiram crescer com tecnologia.",
 } as const;
 
+export interface ProjectResult {
+  label: string;
+  value: string;
+}
+
 /**
- * Placeholder data until Fase 9 (CMS) wires this to the CRM API per Capítulo 25.
- * Shape follows the Capítulo 18 project data contract
- * ({ slug, title, category, technologies, summary, challenge, solution, results }).
+ * `challenge`/`solution`/`coverImage` are optional: real projects synced from
+ * the Portal (`services/portfolio/get-projects.ts`) only carry a name,
+ * category, description and thumbnail — not a full case-study writeup, so
+ * the detail page (`/portfolio/[slug]`) skips those sections when absent.
+ */
+export interface Project {
+  slug: string;
+  title: string;
+  category: string;
+  summary: string;
+  challenge?: string;
+  solution?: string;
+  technologies: string[];
+  results: ProjectResult[];
+  tall: boolean;
+  coverImage?: string;
+}
+
+/**
+ * Fallback data — used whenever the Portal has no active projects yet, or
+ * the public-read query fails (see `services/portfolio/get-projects.ts`).
  * Names/categories match Capítulo 13's "Projetos Iniciais" list.
  */
-export const PROJECTS = [
+export const PROJECTS: Project[] = [
   {
     slug: "crm-nexus",
     title: "CRM Nexus",
@@ -76,6 +99,4 @@ export const PROJECTS = [
     ],
     tall: true,
   },
-] as const;
-
-export type Project = (typeof PROJECTS)[number];
+];

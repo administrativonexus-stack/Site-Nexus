@@ -15,13 +15,24 @@ export function ProjectCard({ project }: { project: Project }) {
           project.tall ? "h-64" : "h-44"
         }`}
       >
-        <div className="via-background/0 to-background/80 absolute inset-0 bg-gradient-to-t from-transparent" />
-        <span
-          aria-hidden="true"
-          className="text-foreground/10 absolute -right-4 -bottom-6 text-8xl font-bold select-none"
-        >
-          {project.title.slice(0, 2).toUpperCase()}
-        </span>
+        {project.coverImage ? (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL from the Portal, not whitelistable for next/image
+          <img
+            src={project.coverImage}
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <>
+            <div className="via-background/0 to-background/80 absolute inset-0 bg-gradient-to-t from-transparent" />
+            <span
+              aria-hidden="true"
+              className="text-foreground/10 absolute -right-4 -bottom-6 text-8xl font-bold select-none"
+            >
+              {project.title.slice(0, 2).toUpperCase()}
+            </span>
+          </>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-3 p-6">
         <Badge variant="outline" className="w-fit">

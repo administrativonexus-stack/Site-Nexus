@@ -10,6 +10,10 @@ export const metadata = buildMetadata({
   path: "/portfolio",
 });
 
+// Projects are now managed live in the Portal (/portal/portfolio) — revalidate
+// periodically instead of only at build time.
+export const revalidate = 60;
+
 export default async function PortfolioPage() {
   const projects = await getProjects();
 
