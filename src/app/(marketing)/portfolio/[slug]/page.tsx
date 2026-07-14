@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/metadata";
 import { projectSchema } from "@/lib/seo";
 import { getProjectBySlug, getProjects } from "@/services/portfolio";
+import { ProjectSummary } from "@/features/portfolio";
 
 // Projects are now managed live in the Portal (/portal/portfolio) — revalidate
 // periodically instead of only at build time.
@@ -55,7 +56,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         <Container className="flex flex-col items-center gap-4 text-center">
           <Badge variant="outline">{project.category}</Badge>
           <h1 className="text-title text-foreground max-w-2xl font-semibold">{project.title}</h1>
-          <p className="text-muted-foreground text-body max-w-2xl">{project.summary}</p>
+          <ProjectSummary summary={project.summary} />
           {project.url && (
             <Button
               variant="outline"
