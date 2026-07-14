@@ -39,7 +39,7 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.category}
         </Badge>
         <h3 className="text-foreground font-medium">{project.title}</h3>
-        <p className="text-muted-foreground text-description">{project.summary}</p>
+        <p className="text-muted-foreground text-description line-clamp-2">{project.summary}</p>
         <div className="mt-auto flex items-center justify-between pt-2">
           <div className="flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
