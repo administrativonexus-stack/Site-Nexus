@@ -26,13 +26,18 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      // https: (any host) is required because portfolio project thumbnails
+      // (Portal → portfolio_projects.thumbnail_url, surfaced on the public
+      // /portfolio pages) are arbitrary externally-hosted URLs pasted by
+      // whoever manages the Portal — there's no fixed set of hosts to
+      // whitelist instead.
+      "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       // wss: variant is for the Portal's Supabase Realtime subscriptions
-      // (use-realtime-campaigns/use-realtime-messages) — the merged CRM's
-      // only client-side third-party connections; every other integration
-      // (OpenAI, Google Calendar, Evolution/WhatsApp Cloud, Apify) runs
-      // exclusively in Route Handlers, never subject to browser CSP.
+      // (use-realtime-messages) — the merged CRM's only client-side
+      // third-party connection; every other integration (OpenAI, Google
+      // Calendar, Evolution/WhatsApp Cloud, Apify) runs exclusively in Route
+      // Handlers, never subject to browser CSP.
       `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""} ${(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace("https://", "wss://")}`,
       "frame-ancestors 'none'",
     ].join("; "),
