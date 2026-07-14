@@ -78,12 +78,19 @@ export function KanbanBoard({ initialLeads }: KanbanBoardProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       })
-      if (!res.ok) throw new Error()
-    } catch {
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.error ?? "Failed to update status")
+      }
+    } catch (error) {
       setLeads((prev) =>
         prev.map((l) => (l.id === lead.id ? { ...l, status: lead.status } : l))
       )
-      toast.error("Falha ao atualizar status. Tente novamente.")
+      toast.error(
+        error instanceof Error && error.message
+          ? `Falha ao atualizar status: ${error.message}`
+          : "Falha ao atualizar status. Tente novamente."
+      )
     }
   }
 

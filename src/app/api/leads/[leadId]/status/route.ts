@@ -16,7 +16,8 @@ export async function PATCH(request: Request, { params }: Params) {
 
     const lead = await updateLeadStatus(leadId, status, user.id)
     return NextResponse.json(lead)
-  } catch {
-    return NextResponse.json({ error: "Failed to update status" }, { status: 500 })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update status"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

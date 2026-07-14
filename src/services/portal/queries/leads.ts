@@ -45,13 +45,21 @@ export async function updateLead(id: string, updates: LeadUpdate): Promise<Lead>
 export async function updateLeadStatus(id: string, status: LeadStatus, performedBy?: string) {
   const supabase = await createClient()
 
-  const { data: lead, error: leadError } = await supabase
+  // Not .single(): a lead RLS blocks from updating (e.g. imported_by doesn't
+  // match the current user — see supabase/migrations/
+  // 20240013_backfill_leads_imported_by.sql) makes this update affect 0 rows
+  // rather than error, and .single() on 0 rows throws an opaque "multiple
+  // (or no) rows returned" instead of a message that explains what happened.
+  const { data: rows, error: leadError } = await supabase
     .from("leads")
     .update({ status } as never)
     .eq("id", id)
     .select("status, company_name")
-    .single()
   if (leadError) throw leadError
+  if (!rows || rows.length === 0) {
+    throw new Error(`Lead ${id} not found or not owned by the current user`)
+  }
+  const lead = rows[0]
 
   await supabase.from("lead_history").insert({
     lead_id: id,
