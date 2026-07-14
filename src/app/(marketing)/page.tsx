@@ -40,6 +40,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// The Portfolio teaser below pulls live projects from the Portal
+// (services/portfolio/get-projects.ts) — revalidate periodically instead of
+// only at build time, same as /portfolio and /portfolio/[slug].
+export const revalidate = 60;
+
 export default async function Home() {
   const projects = await getProjects();
 
