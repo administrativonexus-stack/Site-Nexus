@@ -70,14 +70,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
         <Container className="mt-16">
           <div
-            className={`from-primary/20 to-secondary/20 relative h-72 overflow-hidden rounded-xl bg-gradient-to-br md:h-96`}
+            className={`from-primary/20 to-secondary/20 relative aspect-video overflow-hidden rounded-xl bg-gradient-to-br`}
           >
             {project.coverImage ? (
               // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL from the Portal, not whitelistable for next/image
               <img
                 src={project.coverImage}
                 alt={project.title}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover object-top"
               />
             ) : (
               <span

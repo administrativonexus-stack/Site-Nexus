@@ -20,7 +20,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <img
             src={project.coverImage}
             alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
         ) : (
           <>
