@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const sort = searchParams.get("sort") ?? "newest"
   const favorites = searchParams.get("favorites") === "true"
 
-  let query = supabase.from("portfolio_projects").select("*").eq("user_id", user.id)
+  let query = supabase.from("portfolio_projects").select("*")
 
   if (category) query = query.eq("category", category)
   if (favorites) query = query.eq("is_favorite", true)
