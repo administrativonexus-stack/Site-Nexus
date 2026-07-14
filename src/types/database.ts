@@ -24,20 +24,6 @@ export type MessageSender = "lead" | "agent" | "ai"
 
 export type MeetingStatus = "scheduled" | "completed" | "cancelled" | "no_show"
 
-export type CampaignStatus = "draft" | "scheduled" | "sending" | "completed" | "paused" | "cancelled"
-
-export type RecipientStatus =
-  | "pending"
-  | "sending"
-  | "sent"
-  | "delivered"
-  | "read"
-  | "replied"
-  | "failed"
-  | "skipped"
-
-export type CampaignEventType = "sent" | "delivered" | "read" | "replied" | "failed" | "meeting_booked"
-
 export interface Database {
   public: {
     Tables: {
@@ -274,121 +260,10 @@ export interface Database {
         }
         Update: never
       }
-      campaigns: {
-        Row: {
-          id: string
-          name: string
-          status: CampaignStatus
-          template_name: string
-          template_language: string
-          template_components: Json | null
-          segment_filters: Json
-          scheduled_at: string | null
-          started_at: string | null
-          completed_at: string | null
-          total_recipients: number
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          status?: CampaignStatus
-          template_name: string
-          template_language?: string
-          template_components?: Json | null
-          segment_filters?: Json
-          scheduled_at?: string | null
-          started_at?: string | null
-          completed_at?: string | null
-          total_recipients?: number
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          name?: string
-          status?: CampaignStatus
-          template_name?: string
-          template_language?: string
-          template_components?: Json | null
-          segment_filters?: Json
-          scheduled_at?: string | null
-          started_at?: string | null
-          completed_at?: string | null
-          total_recipients?: number
-          updated_at?: string
-        }
-      }
-      campaign_recipients: {
-        Row: {
-          id: string
-          campaign_id: string
-          lead_id: string
-          status: RecipientStatus
-          whatsapp_message_id: string | null
-          error_message: string | null
-          sent_at: string | null
-          delivered_at: string | null
-          read_at: string | null
-          replied_at: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          campaign_id: string
-          lead_id: string
-          status?: RecipientStatus
-          whatsapp_message_id?: string | null
-          error_message?: string | null
-          sent_at?: string | null
-          delivered_at?: string | null
-          read_at?: string | null
-          replied_at?: string | null
-          created_at?: string
-        }
-        Update: {
-          status?: RecipientStatus
-          whatsapp_message_id?: string | null
-          error_message?: string | null
-          sent_at?: string | null
-          delivered_at?: string | null
-          read_at?: string | null
-          replied_at?: string | null
-        }
-      }
-      campaign_events: {
-        Row: {
-          id: string
-          campaign_id: string
-          recipient_id: string
-          event_type: CampaignEventType
-          raw_payload: Json | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          campaign_id: string
-          recipient_id: string
-          event_type: CampaignEventType
-          raw_payload?: Json | null
-          created_at?: string
-        }
-        Update: never
-      }
     }
     Views: Record<string, never>
     Functions: {
       get_dashboard_metrics: {
-        Args: Record<string, never>
-        Returns: Json
-      }
-      get_campaign_metrics: {
-        Args: { p_campaign_id: string }
-        Returns: Json
-      }
-      get_campaigns_overview_metrics: {
         Args: Record<string, never>
         Returns: Json
       }
@@ -397,9 +272,6 @@ export interface Database {
       lead_status: LeadStatus
       message_sender: MessageSender
       meeting_status: MeetingStatus
-      campaign_status: CampaignStatus
-      recipient_status: RecipientStatus
-      campaign_event_type: CampaignEventType
     }
   }
 }

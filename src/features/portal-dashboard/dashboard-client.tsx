@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import {
   UserPlus,
   Users,
@@ -8,7 +7,6 @@ import {
   MessageCircle,
   CalendarCheck,
   Trophy,
-  Megaphone,
 } from "lucide-react"
 import { MetricCard } from "@/features/portal-dashboard/metric-card"
 import { ConversionFunnelChart } from "@/features/portal-dashboard/conversion-funnel-chart"
@@ -17,10 +15,9 @@ import type { DashboardMetrics } from "@/types/api"
 
 interface DashboardClientProps {
   initialMetrics: DashboardMetrics | null
-  activeCampaigns: number | null
 }
 
-export function DashboardClient({ initialMetrics, activeCampaigns }: DashboardClientProps) {
+export function DashboardClient({ initialMetrics }: DashboardClientProps) {
   const { metrics, loading } = useDashboardMetrics(initialMetrics ?? undefined)
 
   const conversionRate =
@@ -55,7 +52,7 @@ export function DashboardClient({ initialMetrics, activeCampaigns }: DashboardCl
       </div>
 
       {/* Tier 2 — pipeline metrics, supporting context */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label="Leads no mês"
           value={metrics?.leads_month ?? null}
@@ -88,16 +85,6 @@ export function DashboardClient({ initialMetrics, activeCampaigns }: DashboardCl
           accent="amber"
           delay={290}
         />
-        <Link href="/portal/campaigns" className="block">
-          <MetricCard
-            label="Campanhas ativas"
-            value={activeCampaigns}
-            loading={loading && activeCampaigns === null}
-            icon={Megaphone}
-            accent="violet"
-            delay={320}
-          />
-        </Link>
       </div>
 
       {/* Tier 3 — conversion funnel */}

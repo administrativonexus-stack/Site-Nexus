@@ -11,7 +11,6 @@ const ENV_MAP: Record<string, string | undefined> = {
   whatsapp_cloud_business_account_id: process.env.WHATSAPP_CLOUD_BUSINESS_ACCOUNT_ID,
   whatsapp_cloud_app_secret: process.env.WHATSAPP_CLOUD_APP_SECRET,
   whatsapp_cloud_verify_token: process.env.WHATSAPP_CLOUD_VERIFY_TOKEN,
-  campaign_dispatch_secret: process.env.CAMPAIGN_DISPATCH_SECRET,
 }
 
 export async function getSetting(key: string, userId?: string): Promise<string | null> {

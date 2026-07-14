@@ -7,7 +7,6 @@ import {
   Search,
   Kanban,
   MessageCircle,
-  Megaphone,
   Bot,
   Settings,
   LogOut,
@@ -33,8 +32,7 @@ const NAV_GROUPS = [
   {
     label: "Automação",
     items: [
-      { href: "/portal/campaigns", label: "Campanhas", icon: Megaphone },
-      { href: "/portal/sdr",       label: "SDR IA",    icon: Bot },
+      { href: "/portal/sdr", label: "SDR IA", icon: Bot },
     ],
   },
   {

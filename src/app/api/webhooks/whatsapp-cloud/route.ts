@@ -5,7 +5,6 @@ import { autoRespondSDR } from "@/services/portal/sdr/auto-respond"
 import {
   verifyHandshake,
   verifySignature,
-  parseStatusEvents,
   parseInboundMessages,
 } from "@/services/portal/whatsapp-cloud/webhook-parser"
 
@@ -31,18 +30,6 @@ export async function GET(request: Request) {
   return new NextResponse(result, { status: 200, headers: { "Content-Type": "text/plain" } })
 }
 
-// Status lifecycle rank — used to avoid out-of-order webhook deliveries downgrading a recipient's status
-const STATUS_RANK: Record<string, number> = {
-  pending: 0,
-  sending: 1,
-  sent: 2,
-  delivered: 3,
-  read: 4,
-  replied: 5,
-  failed: 5,
-  skipped: 5,
-}
-
 export async function POST(request: Request) {
   const rawBody = await request.text()
 
@@ -57,41 +44,6 @@ export async function POST(request: Request) {
   try {
     const body = JSON.parse(rawBody)
     const supabase = await createServiceClient()
-
-    // Status callbacks: sent / delivered / read / failed
-    const statusEvents = parseStatusEvents(body)
-    for (const event of statusEvents) {
-      const { data: recipient } = await supabase
-        .from("campaign_recipients")
-        .select("id, campaign_id, status")
-        .eq("whatsapp_message_id", event.whatsappMessageId)
-        .maybeSingle()
-      if (!recipient) continue
-
-      if (STATUS_RANK[event.status] <= STATUS_RANK[recipient.status]) continue
-
-      const timestampField =
-        event.status === "sent" ? "sent_at"
-        : event.status === "delivered" ? "delivered_at"
-        : event.status === "read" ? "read_at"
-        : null
-
-      await supabase
-        .from("campaign_recipients")
-        .update({
-          status: event.status,
-          ...(timestampField ? { [timestampField]: new Date(event.timestamp * 1000).toISOString() } : {}),
-          ...(event.status === "failed" ? { error_message: event.errorMessage ?? "Delivery failed" } : {}),
-        })
-        .eq("id", recipient.id)
-
-      await supabase.from("campaign_events").insert({
-        campaign_id: recipient.campaign_id,
-        recipient_id: recipient.id,
-        event_type: event.status,
-        raw_payload: event as unknown as Record<string, unknown>,
-      })
-    }
 
     // Inbound replies — dual-write into the regular conversations inbox
     const inboundMessages = parseInboundMessages(body)
@@ -127,30 +79,6 @@ export async function POST(request: Request) {
         read: false,
       })
 
-      // Mark the most recent non-replied campaign recipient row for this lead as replied
-      const { data: recipient } = await supabase
-        .from("campaign_recipients")
-        .select("id, campaign_id, status")
-        .eq("lead_id", leadId)
-        .in("status", ["sent", "delivered", "read"])
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-
-      if (recipient) {
-        await supabase
-          .from("campaign_recipients")
-          .update({ status: "replied", replied_at: new Date().toISOString() })
-          .eq("id", recipient.id)
-
-        await supabase.from("campaign_events").insert({
-          campaign_id: recipient.campaign_id,
-          recipient_id: recipient.id,
-          event_type: "replied",
-        })
-      }
-
-      // Reuses the existing SDR auto-respond toggle — campaign replies are treated like any other inbound message
       void autoRespondSDR(leadId, msg.text, "")
     }
 

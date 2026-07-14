@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto"
-import type { ParsedStatusEvent, ParsedInboundMessage } from "./types"
+import type { ParsedInboundMessage } from "./types"
 
 export function safeCompare(a: string, b: string): boolean {
   try {
@@ -32,13 +32,6 @@ export function verifySignature(rawBody: string, signatureHeader: string | null,
   return safeCompare(signatureHeader, expected)
 }
 
-interface MetaStatus {
-  id?: string
-  status?: string
-  timestamp?: string
-  errors?: Array<{ message?: string }>
-}
-
 interface MetaMessage {
   id?: string
   from?: string
@@ -53,7 +46,6 @@ interface MetaContact {
 }
 
 interface MetaChangeValue {
-  statuses?: MetaStatus[]
   messages?: MetaMessage[]
   contacts?: MetaContact[]
 }
@@ -73,25 +65,6 @@ function walkChangeValues(body: unknown): MetaChangeValue[] {
   } catch {
     return []
   }
-}
-
-// Meta batches multiple status updates per POST — returns an array, not a nullable single object
-export function parseStatusEvents(body: unknown): ParsedStatusEvent[] {
-  const events: ParsedStatusEvent[] = []
-  for (const value of walkChangeValues(body)) {
-    for (const s of value.statuses ?? []) {
-      if (!s.id || !s.status) continue
-      const status = s.status as ParsedStatusEvent["status"]
-      if (!["sent", "delivered", "read", "failed"].includes(status)) continue
-      events.push({
-        whatsappMessageId: s.id,
-        status,
-        timestamp: s.timestamp ? parseInt(s.timestamp, 10) : Date.now() / 1000,
-        errorMessage: s.errors?.[0]?.message,
-      })
-    }
-  }
-  return events
 }
 
 export function parseInboundMessages(body: unknown): ParsedInboundMessage[] {
