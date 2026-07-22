@@ -54,9 +54,13 @@
   --radius-lg: 24px;
   --radius-xl: 32px;
 
-  /* Typography scale (px) — Capítulo 17. */
-  --text-hero: 4.5rem; /* 72px */
-  --text-title: 3rem; /* 48px */
+  /* Typography scale (px) — Capítulo 17. Hero/título use clamp() so the
+     72px/48px desktop sizes (needed as a ceiling on wide viewports) don't
+     overflow narrow mobile screens — Sora is measurably wider than Geist
+     per character at the same font-size, which made single long words in
+     the Hero headline clip past the viewport edge on mobile. */
+  --text-hero: clamp(2.5rem, 1rem + 6vw, 4.5rem); /* 40px → 72px */
+  --text-title: clamp(1.75rem, 1rem + 4vw, 3rem); /* 28px → 48px */
   --text-subtitle: 1.5rem; /* 24px */
   --text-body: 1.125rem; /* 18px */
   --text-description: 1rem; /* 16px */

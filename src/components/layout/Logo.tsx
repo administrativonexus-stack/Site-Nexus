@@ -13,7 +13,7 @@ export function Logo({ className }: { className?: string }) {
         className,
       )}
     >
-      <Image src={wordmark} alt={siteConfig.name} height={28} className="h-7 w-auto" priority />
+      <Image src={wordmark} alt={siteConfig.name} className="h-7 w-auto" priority />
     </Link>
   );
 }
