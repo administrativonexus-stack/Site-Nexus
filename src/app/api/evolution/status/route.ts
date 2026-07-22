@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { searchParams } = new URL(request.url)
-  const instance = searchParams.get("instance") ?? "nexus"
+  const instance = searchParams.get("instance") ?? "trx"
 
   try {
     const data = await getConnectionStatus(instance, user.id)

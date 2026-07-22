@@ -50,7 +50,7 @@ export function HeroMockup() {
           <span className="size-2.5 rounded-full bg-red-400/70" />
           <span className="size-2.5 rounded-full bg-yellow-400/70" />
           <span className="size-2.5 rounded-full bg-green-400/70" />
-          <span className="text-muted-foreground text-caption ml-2">Nexus CRM</span>
+          <span className="text-muted-foreground text-caption ml-2">CRM TRX</span>
         </div>
 
         <div className="flex">

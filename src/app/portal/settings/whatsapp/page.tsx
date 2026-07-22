@@ -22,7 +22,7 @@ const STATUS_MAP: Record<string, { label: string; className: string }> = {
 export default function WhatsAppSettingsPage() {
   const [evolutionUrl, setEvolutionUrl] = useState("")
   const [evolutionKey, setEvolutionKey] = useState("")
-  const [instanceName, setInstanceName] = useState("nexus")
+  const [instanceName, setInstanceName] = useState("trx")
   const [saving, setSaving] = useState(false)
   const [qrCode, setQrCode] = useState<string | null>(null)
   const [loadingQr, setLoadingQr] = useState(false)
@@ -44,7 +44,7 @@ export default function WhatsAppSettingsPage() {
         ])
         if (urlRes.value) setEvolutionUrl(urlRes.value)
         if (keyRes.value) setEvolutionKey(keyRes.value)
-        const loadedInstance = instanceRes.value || "nexus"
+        const loadedInstance = instanceRes.value || "trx"
         if (instanceRes.value) setInstanceName(loadedInstance)
 
         // Auto-check status using the freshly loaded instance name
@@ -256,7 +256,7 @@ export default function WhatsAppSettingsPage() {
           <div className="space-y-1.5">
             <Label className="text-sm text-muted-foreground">Nome da Instância</Label>
             <Input
-              placeholder="nexus"
+              placeholder="trx"
               value={instanceName}
               disabled={loadingSettings}
               onChange={(e) => setInstanceName(e.target.value)}

@@ -54,7 +54,7 @@ export default function UsersPage() {
       <div>
         <h2 className="text-lg font-semibold">Usuários</h2>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Gerencie quem tem acesso ao Nexus Prospect System.
+          Gerencie quem tem acesso ao TRX Digital Prospect System.
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export default function UsersPage() {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
               <Input
                 type="email"
-                placeholder="socio@nexus.com"
+                placeholder="socio@trxdigital.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

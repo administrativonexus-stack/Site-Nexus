@@ -13,7 +13,7 @@ export async function POST() {
     getSetting("evolution_instance", user.id),
   ])
 
-  const instance = instanceName ?? "nexus"
+  const instance = instanceName ?? "trx"
 
   if (baseUrl && apiKey) {
     try {

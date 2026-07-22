@@ -23,7 +23,7 @@ export const ECOSYSTEM_NODES: Array<{
   { id: "ai", title: "IA SDR", description: "Atendimento 24 horas", icon: "bot", gridArea: "ai" },
   {
     id: "crm",
-    title: "CRM Nexus",
+    title: "CRM TRX",
     description: "Gestão de leads",
     icon: "network",
     gridArea: "crm",

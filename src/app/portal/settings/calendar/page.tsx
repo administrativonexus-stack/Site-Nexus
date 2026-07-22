@@ -32,7 +32,7 @@ function CalendarContent() {
         <CardHeader>
           <CardTitle className="text-sm font-medium">Conexão Google</CardTitle>
           <CardDescription>
-            Autorize o Nexus a criar eventos no seu Google Calendar com link Google Meet automaticamente.
+            Autorize a TRX Digital a criar eventos no seu Google Calendar com link Google Meet automaticamente.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

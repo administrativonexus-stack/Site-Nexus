@@ -23,7 +23,7 @@ export interface SDRConfig {
 export const DEFAULT_SDR_CONFIG: SDRConfig = {
   agentName: "Sara",
   configMode: "guided",
-  companyName: "Nexus",
+  companyName: "TRX Digital",
   companyDescription:
     "Desenvolvemos sistemas personalizados (CRM, ERPs, plataformas, apps) para empresas de todos os tamanhos.",
   services: "Sistemas personalizados, CRM, ERPs, plataformas web, aplicativos móveis.",
@@ -45,7 +45,7 @@ export const DEFAULT_SDR_CONFIG: SDRConfig = {
 export const DEFAULT_MARKETPLACE_SDR_CONFIG: SDRConfig = {
   agentName: "Sara",
   configMode: "guided",
-  companyName: "Nexus",
+  companyName: "TRX Digital",
   companyDescription:
     "Ajudamos vendedores a crescer em marketplaces (Shopee, Shein, Mercado Livre, TikTok Shop) com gestão de anúncios, " +
     "catálogo e tráfego pago dentro das próprias plataformas.",
@@ -53,7 +53,7 @@ export const DEFAULT_MARKETPLACE_SDR_CONFIG: SDRConfig = {
   valueProp: "Processo: reunião de diagnóstico → análise da operação atual → plano de ação → execução.",
   additionalRules:
     "ABERTURA — na PRIMEIRA mensagem da conversa, sempre, sem exceção, nesta ordem:\n" +
-    "1. Se apresente em 1 frase curta (\"Oi! Sou a Sara, da Nexus.\").\n" +
+    "1. Se apresente em 1 frase curta (\"Oi! Sou a Sara, da TRX Digital.\").\n" +
     "2. Pergunte o nome da pessoa.\n" +
     "3. Pergunte \"Como posso te ajudar hoje?\" (ou variação natural) e espere a resposta antes de seguir pro " +
     "roteiro de qualificação — deixe o lead contextualizar o que precisa primeiro.\n" +
@@ -69,7 +69,7 @@ export const DEFAULT_MARKETPLACE_SDR_CONFIG: SDRConfig = {
     "— pergunta direta, uma frase.\n" +
     "2. Se já investe ou já investiu em ads dentro da plataforma — pergunta direta, uma frase.\n" +
     "3. Assim que tiver essas respostas, PARE de fazer perguntas de qualificação e diga objetivamente que a " +
-    "Nexus pode ajudar (cite o que for relevante pro caso dele: ads, catálogo, performance) e proponha a reunião " +
+    "TRX Digital pode ajudar (cite o que for relevante pro caso dele: ads, catálogo, performance) e proponha a reunião " +
     "imediatamente — não fique sondando mais detalhes antes de propor.\n\n" +
     "No máximo 3 perguntas de qualificação antes de propor a reunião. Se o lead já respondeu tudo isso em uma " +
     "única mensagem, vá direto pra proposta de reunião sem repetir perguntas.",

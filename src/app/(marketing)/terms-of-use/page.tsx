@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/metadata";
 
 export const metadata = buildMetadata({
   title: "Termos de Uso",
-  description: "Termos e condições de uso do site institucional da Nexus.",
+  description: "Termos e condições de uso do site institucional da TRX Digital.",
   path: "/terms-of-use",
   noIndex: true,
 });
@@ -40,7 +40,7 @@ export default function TermsOfUsePage() {
           <section>
             <h2 className="text-foreground text-lg font-medium">3. Propriedade intelectual</h2>
             <p className="mt-2">
-              Marca, textos, imagens e código deste site pertencem à Nexus ou a seus licenciadores e
+              Marca, textos, imagens e código deste site pertencem à TRX Digital ou a seus licenciadores e
               não podem ser reproduzidos sem autorização.
             </p>
           </section>
@@ -49,7 +49,7 @@ export default function TermsOfUsePage() {
               4. Limitação de responsabilidade
             </h2>
             <p className="mt-2">
-              A Nexus não se responsabiliza por danos decorrentes do uso indevido das informações
+              A TRX Digital não se responsabiliza por danos decorrentes do uso indevido das informações
               disponibilizadas neste site.
             </p>
           </section>
@@ -64,8 +64,8 @@ export default function TermsOfUsePage() {
             <h2 className="text-foreground text-lg font-medium">6. Contato</h2>
             <p className="mt-2">
               Dúvidas sobre estes termos podem ser enviadas para{" "}
-              <a href="mailto:contato@nexus.com.br" className="text-primary">
-                contato@nexus.com.br
+              <a href="mailto:contato@trxdigital.com.br" className="text-primary">
+                contato@trxdigital.com.br
               </a>
               .
             </p>

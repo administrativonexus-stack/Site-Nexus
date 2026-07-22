@@ -13,7 +13,7 @@ async function getEvolutionConfig(userId: string) {
 
 export async function sendTextMessage(phone: string, text: string, userId: string): Promise<void> {
   const { baseUrl, apiKey } = await getEvolutionConfig(userId)
-  const instanceName = (await getSetting("evolution_instance", userId)) ?? "nexus"
+  const instanceName = (await getSetting("evolution_instance", userId)) ?? "trx"
 
   const res = await fetch(`${baseUrl}/message/sendText/${instanceName}`, {
     method: "POST",
@@ -40,7 +40,7 @@ export async function sendPresence(
   delayMs = 1200
 ): Promise<void> {
   const { baseUrl, apiKey } = await getEvolutionConfig(userId)
-  const instanceName = (await getSetting("evolution_instance", userId)) ?? "nexus"
+  const instanceName = (await getSetting("evolution_instance", userId)) ?? "trx"
 
   const res = await fetch(`${baseUrl}/chat/sendPresence/${instanceName}`, {
     method: "POST",

@@ -43,8 +43,8 @@ export interface Project {
  */
 export const PROJECTS: Project[] = [
   {
-    slug: "crm-nexus",
-    title: "CRM Nexus",
+    slug: "crm-trx",
+    title: "CRM TRX",
     category: "CRM",
     summary: "Sistema interno de prospecção, CRM, SDR com IA e integrações.",
     challenge:

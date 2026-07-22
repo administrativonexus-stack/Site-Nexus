@@ -27,7 +27,7 @@ export async function createMeetingEvent(params: CreateEventParams, userId: stri
     end: { dateTime: endDateTime, timeZone: "America/Sao_Paulo" },
     conferenceData: {
       createRequest: {
-        requestId: `nexus-${Date.now()}`,
+        requestId: `trx-${Date.now()}`,
         conferenceSolutionKey: { type: "hangoutsMeet" },
       },
     },

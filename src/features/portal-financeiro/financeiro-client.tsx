@@ -531,7 +531,7 @@ export function FinanceiroClient() {
       <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 border-b border-border/40">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Financeiro</h1>
-          <p className="text-xs text-muted-foreground">Controle financeiro da Nexus Digital</p>
+          <p className="text-xs text-muted-foreground">Controle financeiro da TRX Digital</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" onClick={refreshAll} className="gap-1.5 h-8">

@@ -28,7 +28,7 @@ const InteractiveDemo = dynamic(
 );
 
 // Home doesn't call buildMetadata() — title/description/OG defaults already
-// come from the root layout and shouldn't get "Nexus | Nexus" from the title
+// come from the root layout and shouldn't get "TRX Digital | TRX Digital" from the title
 // template. It still needs its own canonical though (Capítulo 22 requires
 // every page to have one). Deliberately NOT setting `openGraph.url` here:
 // doing so replaces (rather than merges with) the root opengraph-image.tsx

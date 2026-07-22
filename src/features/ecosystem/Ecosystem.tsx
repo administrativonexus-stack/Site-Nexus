@@ -89,8 +89,8 @@ export function Ecosystem() {
                 toRef={nodeRefs[to]}
                 pathColor="var(--border)"
                 pathOpacity={isDimmed ? 0.08 : 0.3}
-                gradientStartColor="#6C63FF"
-                gradientStopColor="#8B5CF6"
+                gradientStartColor="#E6F101"
+                gradientStopColor="#00C0D4"
                 pathWidth={isHighlighted ? 2.5 : 1.5}
                 duration={4}
               />

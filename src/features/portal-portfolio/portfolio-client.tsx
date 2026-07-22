@@ -279,7 +279,7 @@ export function PortfolioClient() {
       <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 border-b border-border/40">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Portfólio</h1>
-          <p className="text-xs text-muted-foreground">Biblioteca de projetos da Nexus Digital</p>
+          <p className="text-xs text-muted-foreground">Biblioteca de projetos da TRX Digital</p>
         </div>
         <Button size="sm" onClick={() => { setEditProject(null); setModal(true) }} className="gap-1.5 h-8 w-fit">
           <Plus className="h-3.5 w-3.5" /> Novo Projeto

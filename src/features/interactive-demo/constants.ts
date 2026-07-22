@@ -14,7 +14,7 @@ export const DEMO_NODES: Array<{
   icon: "message-circle" | "bot" | "network" | "calendar" | "layout-dashboard";
 }> = [
   { id: "whatsapp", title: "WhatsApp", icon: "message-circle" },
-  { id: "ia", title: "IA Nexus", icon: "bot" },
+  { id: "ia", title: "IA TRX", icon: "bot" },
   { id: "crm", title: "CRM", icon: "network" },
   { id: "agenda", title: "Agenda", icon: "calendar" },
   { id: "dashboard", title: "Dashboard", icon: "layout-dashboard" },

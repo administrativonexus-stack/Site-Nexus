@@ -54,7 +54,7 @@ function SidebarLogo() {
         <span className="text-[11px] font-black text-white" aria-hidden="true">N</span>
       </div>
       <span className="text-sm font-semibold text-sidebar-foreground tracking-tight">
-        Nexus Portal
+        Portal TRX
       </span>
     </div>
   )

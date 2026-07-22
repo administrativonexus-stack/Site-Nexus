@@ -26,8 +26,8 @@ describe("getProjects / getProjectBySlug — no CRM API configured", () => {
   it("finds a project by slug locally", async () => {
     vi.stubEnv("NEXT_PUBLIC_CRM_API_URL", "");
     const { getProjectBySlug } = await importFreshModule();
-    await expect(getProjectBySlug("crm-nexus")).resolves.toEqual(
-      PROJECTS.find((p) => p.slug === "crm-nexus"),
+    await expect(getProjectBySlug("crm-trx")).resolves.toEqual(
+      PROJECTS.find((p) => p.slug === "crm-trx"),
     );
     await expect(getProjectBySlug("does-not-exist")).resolves.toBeUndefined();
   });
@@ -67,6 +67,6 @@ describe("getProjects / getProjectBySlug — CRM API configured", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 404 }));
 
     const { getProjectBySlug } = await importFreshModule();
-    await expect(getProjectBySlug("crm-nexus")).resolves.toBeUndefined();
+    await expect(getProjectBySlug("crm-trx")).resolves.toBeUndefined();
   });
 });

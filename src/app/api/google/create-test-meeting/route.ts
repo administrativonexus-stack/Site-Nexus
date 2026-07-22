@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     // The connected Google account is the calendar owner/organizer by default —
     // only the provided email needs to be added explicitly as an attendee
     const event = await createMeetingEvent({
-      summary: "Reunião de teste — Nexus Prospect System",
+      summary: "Reunião de teste — TRX Digital Prospect System",
       description: "Evento de teste criado pela página /calendar-test. Não vinculado a nenhum lead.",
       startDateTime: startDateTime.toISOString(),
       endDateTime: endDateTime.toISOString(),

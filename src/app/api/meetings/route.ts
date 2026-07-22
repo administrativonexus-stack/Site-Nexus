@@ -25,8 +25,8 @@ export async function POST(request: Request) {
     const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000) // 1h
 
     const event = await createMeetingEvent({
-      summary: `Reunião Nexus × ${lead.company_name}`,
-      description: "Reunião de diagnóstico agendada pelo Nexus Prospect System",
+      summary: `Reunião TRX Digital × ${lead.company_name}`,
+      description: "Reunião de diagnóstico agendada pelo TRX Digital Prospect System",
       startDateTime: startDateTime.toISOString(),
       endDateTime: endDateTime.toISOString(),
     }, user.id)

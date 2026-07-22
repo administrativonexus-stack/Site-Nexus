@@ -1,5 +1,5 @@
 export const SOCIAL_LINKS = {
-  linkedin: "https://linkedin.com/company/nexus",
-  instagram: "https://instagram.com/nexus",
-  github: "https://github.com/nexus",
+  linkedin: "https://linkedin.com/company/trx-digital",
+  instagram: "https://instagram.com/trxdigital",
+  github: "https://github.com/trx-digital",
 } as const;

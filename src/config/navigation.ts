@@ -28,7 +28,7 @@ export const SITEMAP_ROUTES = ["/", "/solutions", "/portfolio", "/about", "/cont
 
 /**
  * Protected routes (Supabase session required, enforced by middleware).
- * `/portal` is the merged CRM (Nexus Prospect System) — brought into this
+ * `/portal` is the merged CRM (TRX Digital Prospect System) — brought into this
  * app as a real path prefix rather than a separate deployment, so a single
  * Supabase session covers both the marketing site's auth and the CRM.
  * `isPrivateRoute()` in `proxy.ts` does prefix matching, so this alone

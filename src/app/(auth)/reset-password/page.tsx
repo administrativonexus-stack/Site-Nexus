@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/metadata";
 
 export const metadata = buildMetadata({
   title: "Redefinir senha",
-  description: "Defina uma nova senha para sua conta Nexus.",
+  description: "Defina uma nova senha para sua conta TRX Digital.",
   path: "/reset-password",
   noIndex: true,
 });

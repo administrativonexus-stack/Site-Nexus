@@ -123,7 +123,7 @@ export async function executeSDRTool(
           : `Reunião comercial — ${context.leadCompanyName}`
 
       const publicDescription =
-        "Reunião comercial agendada com a Nexus. Qualquer dúvida, é só responder este convite."
+        "Reunião comercial agendada com a TRX Digital. Qualquer dúvida, é só responder este convite."
 
       const notes = [
         `Cliente: ${contactName}`,

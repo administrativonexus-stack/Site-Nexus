@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const instanceName = (await getSetting("evolution_instance", user.id)) ?? "nexus"
+    const instanceName = (await getSetting("evolution_instance", user.id)) ?? "trx"
 
     const forwardedHost = request.headers.get("x-forwarded-host")
     const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https"

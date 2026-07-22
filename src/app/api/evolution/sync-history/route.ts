@@ -12,7 +12,7 @@ export async function POST() {
 
   const supabase = await createServiceClient()
 
-  const instanceName = (await getSetting("evolution_instance", user.id)) ?? "nexus"
+  const instanceName = (await getSetting("evolution_instance", user.id)) ?? "trx"
 
   let totalMessages = 0
   let totalChats = 0

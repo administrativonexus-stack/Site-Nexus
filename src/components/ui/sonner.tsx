@@ -9,7 +9,7 @@ import {
   Loader2Icon,
 } from "lucide-react";
 
-// Nexus ships a single "Dark Premium" theme (no light mode / toggle in the PRD),
+// TRX Digital ships a single "Dark Premium" theme (no light mode / toggle in the PRD),
 // so this skips next-themes entirely rather than pulling in a switching library
 // the product never uses (Capítulo 23: "evitar bibliotecas desnecessárias").
 const Toaster = ({ ...props }: ToasterProps) => {

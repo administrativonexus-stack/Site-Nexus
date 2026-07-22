@@ -53,7 +53,7 @@ const PROFILE_PREFIXES: Record<SDRProfile, string> = {
 }
 
 const PROFILE_LABELS: Record<SDRProfile, string> = {
-  default: "Nexus (padrão)",
+  default: "TRX (padrão)",
   marketplace: "Marketplace Sellers",
 }
 
@@ -247,7 +247,7 @@ export function SDRClient({ initialSettings, initialLogs, availableNiches }: SDR
           )}
         >
           <Bot className="h-3.5 w-3.5" />
-          Nexus (padrão)
+          TRX (padrão)
         </button>
         <button
           onClick={() => setActiveProfile("marketplace")}
@@ -454,7 +454,7 @@ export function SDRClient({ initialSettings, initialLogs, availableNiches }: SDR
                       id="company-name"
                       value={profile.companyName}
                       onChange={(e) => updateProfile({ companyName: e.target.value })}
-                      placeholder="Ex: Nexus Sistemas"
+                      placeholder="Ex: TRX Digital"
                     />
                   </div>
                   <div className="space-y-2">
@@ -541,7 +541,7 @@ export function SDRClient({ initialSettings, initialLogs, availableNiches }: SDR
                 <textarea
                   value={profile.systemPrompt}
                   onChange={(e) => updateProfile({ systemPrompt: e.target.value })}
-                  placeholder={`Você é Sara, assistente de agendamento da Nexus.\n\nEstá conversando com {{EMPRESA}} de {{CIDADE}}.\n\n...`}
+                  placeholder={`Você é Sara, assistente de agendamento da TRX Digital.\n\nEstá conversando com {{EMPRESA}} de {{CIDADE}}.\n\n...`}
                   rows={16}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                 />

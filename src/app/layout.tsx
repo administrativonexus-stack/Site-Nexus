@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Sora, Geist_Mono, Inter } from "next/font/google";
 import { MotionConfig } from "motion/react";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -12,9 +12,9 @@ import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { SessionProvider } from "@/features/authentication/SessionProvider";
 import "./globals.css";
 
-// Nexus Design System (Capítulo 17): Geist primary, Inter fallback.
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// TRX Digital Design System (Capítulo 17): Sora for headings, Inter for body.
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
 });
 
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#09090b",
+  themeColor: "#0e0e10",
 };
 
 export default function RootLayout({
@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`dark ${geistSans.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${sora.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <SkipLink />

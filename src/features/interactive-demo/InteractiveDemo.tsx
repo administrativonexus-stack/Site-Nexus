@@ -135,8 +135,8 @@ export function InteractiveDemo() {
               toRef={nodeRefs[to]}
               pathColor="var(--border)"
               pathOpacity={0.3}
-              gradientStartColor="#6C63FF"
-              gradientStopColor="#8B5CF6"
+              gradientStartColor="#E6F101"
+              gradientStopColor="#00C0D4"
               duration={2.5}
               repeat={running ? Infinity : 0}
             />

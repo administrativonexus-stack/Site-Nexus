@@ -28,8 +28,8 @@ export function renderOgImage({
         flexDirection: "column",
         justifyContent: "center",
         padding: "80px",
-        backgroundColor: "#09090b",
-        backgroundImage: "radial-gradient(circle at 30% 30%, #17171a, #09090b)",
+        backgroundColor: "#0e0e10",
+        backgroundImage: "radial-gradient(circle at 30% 30%, #2c2c2e, #0e0e10)",
       }}
     >
       <div style={{ display: "flex", fontSize: 28, fontWeight: 500, color: "#a1a1aa" }}>

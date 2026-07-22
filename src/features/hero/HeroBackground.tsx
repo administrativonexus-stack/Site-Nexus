@@ -16,7 +16,7 @@ export function HeroBackground() {
           dotSize={3}
           gap={28}
           baseColor="#27272a"
-          activeColor="#6c63ff"
+          activeColor="#e6f101"
           proximity={120}
           shockRadius={200}
         />
@@ -24,7 +24,7 @@ export function HeroBackground() {
       <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center, rgba(108,99,255,0.10), transparent 60%)",
+          background: "radial-gradient(ellipse at center, rgba(230,241,1,0.10), transparent 60%)",
         }}
       />
       <div

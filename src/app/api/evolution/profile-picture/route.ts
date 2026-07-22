@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const phone = searchParams.get("phone")
   if (!phone) return NextResponse.json({ error: "phone required" }, { status: 400 })
 
-  const instanceName = (await getSetting("evolution_instance", user.id)) ?? "nexus"
+  const instanceName = (await getSetting("evolution_instance", user.id)) ?? "trx"
   const url = await getProfilePicture(instanceName, phone, user.id)
 
   return NextResponse.json({ url })

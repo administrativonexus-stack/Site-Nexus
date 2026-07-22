@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
 interface BuildMetadataOptions {
-  /** Bare page title — the root layout's title template appends " | Nexus". */
+  /** Bare page title — the root layout's title template appends " | TRX Digital". */
   title: string;
   description: string;
   /** Path used for the canonical URL and og:url, e.g. "/about" or "/" — resolved against metadataBase. */

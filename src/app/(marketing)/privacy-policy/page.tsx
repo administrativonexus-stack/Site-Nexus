@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/metadata";
 export const metadata = buildMetadata({
   title: "Política de Privacidade",
   description:
-    "Como a Nexus coleta, utiliza e protege os dados pessoais dos visitantes e clientes.",
+    "Como a TRX Digital coleta, utiliza e protege os dados pessoais dos visitantes e clientes.",
   path: "/privacy-policy",
   noIndex: true,
 });
@@ -56,8 +56,8 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-foreground text-lg font-medium">5. Contato</h2>
             <p className="mt-2">
               Dúvidas sobre esta política podem ser enviadas para{" "}
-              <a href="mailto:contato@nexus.com.br" className="text-primary">
-                contato@nexus.com.br
+              <a href="mailto:contato@trxdigital.com.br" className="text-primary">
+                contato@trxdigital.com.br
               </a>
               .
             </p>
